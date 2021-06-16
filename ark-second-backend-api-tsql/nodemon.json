@@ -1,0 +1,11 @@
+{
+    "env": {
+        "PORT": 5000,
+        "DB_USER": "arkapi",
+        "DB_PWD": "arksecond123",
+        "DB_NAME": "ArkSecondDB",
+        "CSV_PATH": "../csv/ARK_INNOVATION_ETF_ARKK_HOLDINGS.csv", 
+        "EN_KEY": "DTRNtNc71O",
+        "LOG_LEVEL" : "info"
+    }
+}

@@ -1,0 +1,6 @@
+TODO -
+user info updater w/ email recovery
+service login authentication
+finish bd GET requests
+document api
+csv archhving after use

@@ -1,0 +1,31 @@
+{
+  "name": "ark-second",
+  "version": "1.0.0",
+  "description": "Rest API Server for Ark Second web app",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1",
+    "express-validator": "^6.12.0",
+    "fetch-cookie": "^0.11.0",
+    "jsonwebtoken": "^8.5.1",
+    "log4js": "^6.3.0",
+    "mssql": "^7.1.0",
+    "node-cron": "^3.0.0",
+    "node-fetch": "^2.6.1",
+    "node-schedule": "^2.0.0",
+    "nodemailer": "^6.6.1",
+    "user-agents": "^1.0.678",
+    "yahoo-finance": "^0.3.7"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.7"
+  }
+}

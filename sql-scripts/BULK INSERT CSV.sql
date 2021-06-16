@@ -1,0 +1,3 @@
+IF OBJECT_ID('[dbo].[ARK_INNOVATION_ETF_ARKK_HOLDINGS]', 'U') is not null drop table ARK_INNOVATION_ETF_ARKK_HOLDINGS GO
+CREATE TABLE [dbo].[ARK_INNOVATION_ETF_ARKK_HOLDINGS] ([date] [nvarchar](2150) NULL, [fund] [nvarchar](50) NULL, [company] [nvarchar](50) NULL, [ticker] [nvarchar](50) NULL, [cusip] [nvarchar](50) NULL, [shares] [float] NULL, [market_value] [float] NULL, [weight] [float] NULL) ON [PRIMARY] GO
+BULK INSERT [dbo].[ARK_INNOVATION_ETF_ARKK_HOLDINGS] FROM "C:\\Users\\lijs0\\Documents\\Ark CSV\\ARK_INNOVATION_ETF_ARKK_HOLDINGS.csv" WITH (FIELDTERMINATOR = ',', ROWTERMINATOR = '\n') GO
