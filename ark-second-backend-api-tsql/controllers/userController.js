@@ -93,7 +93,7 @@ const signup = async (req, res, next) => {
     );
   }
 
-  res.status(200).json(JSON.stringify({user, firstName, lastName, token}));
+  res.status(201).json({user, firstName, lastName, token});
 };
 
 const login = async (req, res, next) => {

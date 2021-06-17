@@ -1,0 +1,358 @@
+swagger: "2.0"
+info:
+  version: "1.0.0"
+  title: Ark Second API
+host: localhost:5000
+basePath: /
+schemes:
+ - http
+consumes:
+ - application/json
+paths:
+  /api/db:
+    get:
+      summary: Returns all data from the database.
+      responses:
+        '200':
+          description: Data is retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    companyid:
+                      type: integer
+                      example: 1
+                    companyname:
+                      type: string
+                      example: "TESLA INC"
+                    ticker:
+                      type: string
+                      example: "TSLA"
+                    cusip:
+                      type: string
+                      example: "88160R101"
+                    date:
+                      type: string
+                      example: "2021-06-04T00:00:00.000Z"
+                    shares:
+                      type: float
+                      example: 3442727
+                    marketvalue:
+                      type: float
+                      example: 1972131734.68
+                    weight:
+                      type: float
+                      example: 9.78
+        '500':
+          description: Couldn't query the database at the moment.
+  /api/db/companies:
+    get:
+      summary: Returns an array of all unique companies from the database.
+      responses:
+        '200':
+          description: Data is retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    companyid:
+                      type: integer
+                      example: 1
+                    companyname:
+                      type: string
+                      example: "TESLA INC"
+                    ticker:
+                      type: string
+                      example: "TSLA"
+                    cusip:
+                      type: string
+                      example: "88160R101"
+        '500':
+          description: Couldn't query the database at the moment.
+          
+          
+  /api/db/shares:
+    get:
+      summary: Returns an array of shares per company for the most recent day.
+      responses:
+        '200':
+          description: Data is retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    companyid:
+                      type: integer
+                      example: 1
+                    companyname:
+                      type: string
+                      example: "TESLA INC"
+                    ticker:
+                      type: string
+                      example: "TSLA"
+                    cusip:
+                      type: string
+                      example: "88160R101"
+                    date:
+                      type: string
+                      example: "2021-06-04T00:00:00.000Z"
+                    shares:
+                      type: float
+                      example: 3442727
+        '500':
+          description: Couldn't query the database at the moment.
+          
+          
+  /api/db/market_value:
+    get:
+      summary: Returns an array of the total market value of held shares per company for the most recent day.
+      responses:
+        '200':
+          description: Data is retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    companyid:
+                      type: integer
+                      example: 1
+                    companyname:
+                      type: string
+                      example: "TESLA INC"
+                    ticker:
+                      type: string
+                      example: "TSLA"
+                    cusip:
+                      type: string
+                      example: "88160R101"
+                    date:
+                      type: string
+                      example: "2021-06-04T00:00:00.000Z"
+                    marketvalue:
+                      type: float
+                      example: 1972131734.68
+        '500':
+          description: Couldn't query the database at the moment.
+  /api/db/weighting:
+    get:
+      summary: Returns an array of weightings per company in ETF as a % per company for the most recent day.
+      responses:
+        '200':
+          description: Data is retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    companyid:
+                      type: integer
+                      example: 1
+                    companyname:
+                      type: string
+                      example: "TESLA INC"
+                    ticker:
+                      type: string
+                      example: "TSLA"
+                    cusip:
+                      type: string
+                      example: "88160R101"
+                    date:
+                      type: string
+                      example: "2021-06-04T00:00:00.000Z"
+                    weight:
+                      type: float
+                      example: 9.78
+        '500':
+          description: Couldn't query the database at the moment.
+  /api/fin/history/{ticker}/{period}/{interval}:
+    get:
+      summary: Returns an array of quotes starting from and including the start date and ending on but not including the last date interested for an interval between quotes for a company.
+      parameters:
+        - name: ticker
+          in: path
+          required: true
+          description: The ticker for the respective stock.
+          schema:
+            type: string
+            example: TSLA
+        - name: period
+          in: path
+          required: true
+          description: The time inbetween each date of stock data. 'd' is for the daily data, 'w' for weekly, 'm' for monthly, and 'v' for each dividend interval.
+          schema:
+            type: string
+            example: d
+        - name: interval
+          in: path
+          required: true
+          description: The range of dates to recieve stock data on. Should be formatted as year-month-day with first date then last date separated by a -. Start date is incluive and last date is exclusive.
+          schema:
+            type: string
+            example: 2021-06-14-2021-06-16
+      responses:
+        '200':
+          description: Data is retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    date:
+                      type: string
+                      example: "2021-06-15T04:00:00.000Z"
+                    open:
+                      type: float
+                      example: 616.690002
+                    high:
+                      type: float
+                      example: 616.789978
+                    low:
+                      type: float
+                      example: 598.22998
+                    close:
+                      type: float
+                      example: 599.359985
+                    adjClose:
+                      type: float
+                      example: 599.359985
+                    volume:
+                      type: float
+                      example: 17689700
+                    symbol:
+                      type: string
+                      example: "TSLA"
+        '500':
+          description: Something wen't wrong at Yahoo's endpoint.
+  /user/signup:
+    post:
+      summary: Creates a new user with body data if one doesn't exist before returning the respective token.
+      parameters:
+          in: body
+          description: The user to create.
+          schema:
+            type: object
+            required: 
+             - user
+             - firstName
+             - lastName
+             - email
+             - password
+            properties:
+              user:
+                type: string
+                example: test_user
+              firstName:
+                type: string
+                example: John
+              lastName:
+                type: string
+                example: Doh
+              email:
+                type: string
+                example: JohnDoh@email.test
+              password:
+                type: test_password
+      responses:
+        '201':
+          description: OK.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    type: string
+                    example: test_user
+                  firstName:
+                    type: string
+                    example: John
+                  lastName:
+                    type: string
+                    example: Doh
+                  token:
+                    type: string
+        '500':
+          description: Failed to create user or token if user was created.
+        '422':
+          description: Invalid input.
+  /user/login:
+    post:
+      summary: Validates user before returning the respective token.
+      parameters:
+          in: body
+          description: The user to authenticate and login.
+          schema:
+            type: object
+            required: 
+             - user
+             - password
+            properties:
+              user:
+                type: string
+                example: test_user
+              password:
+                type: test_password
+      responses:
+        '200':
+          description: OK.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    type: string
+                    example: test_user
+                  firstName:
+                    type: string
+                    example: John
+                  lastName:
+                    type: string
+                    example: Doh
+                  token:
+                    type: string
+        '500':
+          description: Failed to login.
+        '422':
+          description: Invalid input.
+        '400':
+          description: Username and password don't match or don't exist.
+  /user/recovery:
+    post:
+      summary: Sends an email to the email for the matching user to change password.
+      parameters:
+          in: body
+          description: The user to authenticate and login.
+          schema:
+            type: object
+            required: 
+             - user
+            properties:
+              user:
+                type: string
+                example: test_user
+      responses:
+        '200':
+          description: Email has been send to the email for the specified user.
+        '500':
+          description: Failed to send email.
+        '422':
+          description: Invalid input.
+        '404':
+          description: User doesn't exist

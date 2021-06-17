@@ -12,7 +12,7 @@ db for database routes
 fin for yahoo finance routes
 */
 
-router.use(auth);
+// router.use(auth);
 
 router.get('/db/companies', dbController.getCompanies);
 router.get('/db/shares', dbController.getShares);
@@ -21,7 +21,7 @@ router.get('/db/weighting', dbController.getWeight);
 router.get('/db/today', dbController.getToday);
 router.get('/db', dbController.getDB);
 
-router.get('/fin/history/:ticker/:period/:interval', finController.getHistory); // period: (d for day, w for week, m for month, v for dividend period per quote)
+router.get('/fin/history/:ticker/:period/:interval', finController.getHistory);
 router.get('/fin/quote/:ticker', finController.getQuote);
 
 /////////////////////////////////////////////////////////////////////

@@ -32,7 +32,7 @@ const getHistory = (req, res, next) => {
     function (err, quotes) {
       if (err) {
         logger.error(err.message);
-        throw new HttpError("Something went wrong. Couldn't get data.", 400);
+        throw new HttpError("Something went wrong. Couldn't get data.", 500);
       }
 
       res.status(200).json(quotes);

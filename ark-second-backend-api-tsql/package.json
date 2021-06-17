@@ -22,6 +22,7 @@
     "node-fetch": "^2.6.1",
     "node-schedule": "^2.0.0",
     "nodemailer": "^6.6.1",
+    "swagger-ui": "^3.50.0",
     "user-agents": "^1.0.678",
     "yahoo-finance": "^0.3.7"
   },
