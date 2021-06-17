@@ -12,6 +12,7 @@ const arkRouter = require("./routers/arkRouter");
 const userRouter = require("./routers/userRouter");
 const csvDownload = require("./controllers/engine/csvDownload");
 const csvProcess = require("./controllers/engine/csvProcessor");
+const csvArchive = require("./controllers/engine/csvArchive");
 
 ////////////////////////////////////////////////////////////////
 
@@ -45,6 +46,7 @@ const job = schedule.scheduleJob("0 0 * * * 1-5", async () => {
     logger.error("Scheduled task failed: CSV download and processing");
     logger.error(err.message);
   }
+  csvArchive();
 });
 
 app.use("/api", arkRouter);
