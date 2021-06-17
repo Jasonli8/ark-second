@@ -18,22 +18,25 @@ const loggerAction = log4js.getLogger("action");
 ////////////////////////////////////////////////////////////////
 
 const csvArchive = () => {
-  const currDate = new Date;
-  const date = `${currDate.getFullYear()}-${currDate.getMonth()}-${currDate.getDate()}`
-  fs.rename(
-    process.env.CSV_PATH,
-    `../csv/ARK_INNOVATION_ETF_ARKK_HOLDINGS_${date}.csv`,
-    function (err, data) {
-      if (err) {
-        loggerError.error(err.message + " in csv archiving");
-        return;
+  if (fs.existsSync(process.env.CSV_PATH)) {
+    const currDate = new Date();
+    const date = `${currDate.getFullYear()}-${currDate.getMonth()}-${currDate.getDate()}`;
+    fs.rename(
+      process.env.CSV_PATH,
+      `../csv/ARK_INNOVATION_ETF_ARKK_HOLDINGS_${date}.csv`,
+      function (err, data) {
+        if (err) {
+          loggerError.error(err.message + " in csv archiving");
+          return;
+        }
+        loggerAction.info(
+          "CSV successfully archived as " +
+            `../csv/ARK_INNOVATION_ETF_ARKK_HOLDINGS_${date}.csv`
+        );
       }
-      loggerAction.info("CSV successfully archived as " + `../csv/ARK_INNOVATION_ETF_ARKK_HOLDINGS_${date}.csv`);
-    }
-  );
+    );
+  }
 };
-
-csvArchive();
 
 ////////////////////////////////////////////////////////////////
 
