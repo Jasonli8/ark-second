@@ -1,8 +1,8 @@
-const queryDB = require("./engine/queryDB");
+const queryDB = require("../../../components/helpers/queryDB");
 
 ////////////////////////////////////////////////////////////////
 
-const HttpError = require("../models/http-error");
+const HttpError = require("../../../components/models/http-error");
 
 ////////////////////////////////////////////////////////////////
 

@@ -1,23 +1,11 @@
 const fs = require("fs");
 const readline = require("readline");
-const log4js = require("log4js");
 
 ////////////////////////////////////////////////////////////////
 
-const HttpError = require("../../models/http-error");
-const queryDB = require("./queryDB");
-
-////////////////////////////////////////////////////////////////
-
-log4js.configure({
-  appenders: {
-    cvsProcessor: { type: "file", filename: "./logs/error.log" },
-  },
-  categories: {
-    default: { appenders: ["cvsProcessor"], level: process.env.LOG_LEVEL },
-  },
-});
-const logger = log4js.getLogger("cvsProcessor");
+const HttpError = require("../components/models/http-error");
+const queryDB = require("../components/helpers/queryDB");
+const {loggerError, loggerInfo} = require("../components/helpers/logger");
 
 ////////////////////////////////////////////////////////////////
 
@@ -30,7 +18,9 @@ const isEmpty = (target) => {
 };
 
 const csvProcess = async () => {
+  loggerInfo("Starting to process current CSV.", "csv");
   if (fs.existsSync(process.env.CSV_PATH)) {
+    loggerInfo("CSV found.", "csv");
     const file = readline.createInterface({
       input: fs.createReadStream(process.env.CSV_PATH),
       output: process.stdout,
@@ -57,7 +47,7 @@ const csvProcess = async () => {
           lineNum += 1;
           console.log("error with line: " + line);
           console.log("nullFields: " + nullFields);
-          logger.error("Error with the following data: " + line);
+          loggerError( null, "Error with the following data: " + line, 'csv');
           return;
         }
         const name = data[2].substr(1, data[2].length - 2);
@@ -75,7 +65,7 @@ const csvProcess = async () => {
         try {
           await queryDB(query1);
         } catch (err) {
-          logger.error(err.message + " in company insertion");
+          loggerError(err.message, 'Failed a companies insertion test in csvProcessor.', 'csv');
           file.close();
           file.removeAllListeners();
           lineNum += 1;
@@ -84,7 +74,7 @@ const csvProcess = async () => {
         try {
           await queryDB(query2);
         } catch (err) {
-          logger.error(err.message + " in holdings insertion");
+          loggerError(err.message, 'Failed a holdings insertion test in csvProcessor.', 'csv');
           file.close();
           file.removeAllListeners();
           lineNum += 1;
@@ -93,6 +83,8 @@ const csvProcess = async () => {
       }
       lineNum += 1;
     });
+  } else {
+    loggerInfo("No CSV available", "csv");
   }
 };
 

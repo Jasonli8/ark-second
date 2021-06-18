@@ -1,19 +1,8 @@
 const fs = require("fs");
-const log4js = require("log4js");
 
 ////////////////////////////////////////////////////////////////
 
-log4js.configure({
-  appenders: {
-    error: { type: "file", filename: "./logs/error.log" },
-    action: { type: "file", filename: "./logs/action.log" },
-  },
-  categories: {
-    default: { appenders: ["error", "action"], level: process.env.LOG_LEVEL },
-  },
-});
-const loggerError = log4js.getLogger("error");
-const loggerAction = log4js.getLogger("action");
+const { loggerError, loggerInfo } = require("../components/helpers/logger");
 
 ////////////////////////////////////////////////////////////////
 
@@ -26,12 +15,17 @@ const csvArchive = () => {
       `../csv/ARK_INNOVATION_ETF_ARKK_HOLDINGS_${date}.csv`,
       function (err, data) {
         if (err) {
-          loggerError.error(err.message + " in csv archiving");
+          loggerError(
+            err.message,
+            "Failed to archive CSV file in csvArchive",
+            "csv"
+          );
           return;
         }
-        loggerAction.info(
+        loggerInfo(
           "CSV successfully archived as " +
-            `../csv/ARK_INNOVATION_ETF_ARKK_HOLDINGS_${date}.csv`
+            `../csv/ARK_INNOVATION_ETF_ARKK_HOLDINGS_${date}.csv`,
+          "csv"
         );
       }
     );

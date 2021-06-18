@@ -1,7 +1,7 @@
 const express = require("express");
-const dbController = require('../controllers/dbController');
-const finController = require('../controllers/finController');
-const auth = require('../middleware/auth');
+const dbController = require('./controllers/dbController');
+const finController = require('./controllers/finController');
+const authParse = require('../../middleware/authParse');
 
 const router = express.Router();
 
@@ -12,7 +12,7 @@ db for database routes
 fin for yahoo finance routes
 */
 
-// router.use(auth);
+// router.use(authParse);
 
 router.get('/db/companies', dbController.getCompanies);
 router.get('/db/shares', dbController.getShares);

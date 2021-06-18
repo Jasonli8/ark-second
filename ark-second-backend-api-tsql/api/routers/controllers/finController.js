@@ -1,17 +1,9 @@
 const yahooFinance = require("yahoo-finance");
-const log4js = require("log4js");
 
 ////////////////////////////////////////////////////////////////
 
-const HttpError = require("../models/http-error");
-
-////////////////////////////////////////////////////////////////
-
-log4js.configure({
-  appenders: { error: { type: "file", filename: "./logs/error.log" } },
-  categories: { default: { appenders: ["error"], level: process.env.LOG_LEVEL } },
-});
-const logger = log4js.getLogger("error");
+const HttpError = require("../../../components/models/http-error");
+const { loggerError } = require("../../../components/helpers/logger");
 
 ////////////////////////////////////////////////////////////////
 
@@ -31,7 +23,7 @@ const getHistory = (req, res, next) => {
     },
     function (err, quotes) {
       if (err) {
-        logger.error(err.message);
+        loggerError(err.message, "Failed to get history of quote in finController", "finReq");
         throw new HttpError("Something went wrong. Couldn't get data.", 500);
       }
 
@@ -50,7 +42,7 @@ const getQuote = (req, res, next) => {
     },
     function (err, snapshot) {
       if (err) {
-        logger.error(err.message);
+        loggerError(err.message, "Failed to get quote in finController", "finReq");
         throw new HttpError("Something went wrong. Couldn't get data.", 400);
       }
 

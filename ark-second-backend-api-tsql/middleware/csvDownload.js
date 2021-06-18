@@ -1,24 +1,14 @@
 const fs = require("fs");
-const log4js = require("log4js");
 const nodefetch = require("node-fetch");
+const { nextTick } = require("process");
 const fetch = require("fetch-cookie")(nodefetch);
 
 ////////////////////////////////////////////////////////////////
 
-const HttpError = require("../../models/http-error");
-const csvProcess = require("./csvProcessor");
+const HttpError = require("../components/models/http-error");
+const {loggerError, loggerInfo} = require("../components/helpers/logger");
 
 ////////////////////////////////////////////////////////////////
-
-log4js.configure({
-  appenders: {
-    error: { type: "file", filename: "./logs/error.log" },
-    action: { type: "file", filename: "./logs/action.log" },
-  },
-  categories: { default: { appenders: ["error", "action"], level: process.env.LOG_LEVEL } },
-});
-const loggerError = log4js.getLogger("error");
-const loggerAction = log4js.getLogger("action");
 
 var requestOptions = {
   method: "GET",
@@ -32,7 +22,7 @@ var requestOptions = {
 ////////////////////////////////////////////////////////////////
 
 const csvDownload = async () => {
-  loggerAction.info("Beginning scheduled CSV import");
+  loggerInfo("Beginning scheduled CSV download", "csv");
   fetch(
     "https://ark-funds.com/wp-content/fundsiteliterature/csv/ARK_INNOVATION_ETF_ARKK_HOLDINGS.csv",
     requestOptions
@@ -48,12 +38,13 @@ const csvDownload = async () => {
 
       file.on("error", (err) => {
         fs.unlink(dest);
-        loggerError.error(err.message);
+        loggerError(err.message, "Failed to pipe into local file in csvDownload", "csv");
         return;
       });
     })
     .catch((err) => {
-      loggerError.error(err.message);
+      loggerError(err.message, "Failed to fetch file in csvDownload.", "csv");
+      return nextTick(new HttpError("Couldn't download CSV", 500))
     });
 };
 

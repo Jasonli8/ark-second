@@ -6,8 +6,8 @@ const { validationResult } = require("express-validator");
 
 ////////////////////////////////////////////////////////////////
 
-const queryDB = require("./engine/queryDB");
-const HttpError = require("../models/http-error");
+const queryDB = require("../../../components/helpers/queryDB");
+const HttpError = require("../../../components/models/http-error");
 
 ////////////////////////////////////////////////////////////////
 

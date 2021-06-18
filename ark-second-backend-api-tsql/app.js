@@ -1,28 +1,18 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const schedule = require("node-schedule");
-const log4js = require("log4js");
+const {loggerError} = require("./components/helpers/logger")
 
 const app = express();
 
 ////////////////////////////////////////////////////////////////
 
-const HttpError = require("./models/http-error");
-const arkRouter = require("./routers/arkRouter");
-const userRouter = require("./routers/userRouter");
-const csvDownload = require("./controllers/engine/csvDownload");
-const csvProcess = require("./controllers/engine/csvProcessor");
-const csvArchive = require("./controllers/engine/csvArchive");
-
-////////////////////////////////////////////////////////////////
-
-log4js.configure({
-  appenders: {
-    scheduledJob: { type: "file", filename: "./logs/error.log" },
-  },
-  categories: { default: { appenders: ["scheduledJob"], level: process.env.LOG_LEVEL } },
-});
-const logger = log4js.getLogger("scheduledJob");
+const HttpError = require("./components/models/http-error");
+const arkRouter = require("./api/routers/arkRouter");
+const userRouter = require("./api/routers/userRouter");
+const csvDownload = require("./middleware/csvDownload");
+const csvProcess = require("./middleware/csvProcessor");
+const csvArchive = require("./middleware/csvArchive");
 
 ////////////////////////////////////////////////////////////////
 
@@ -42,11 +32,10 @@ const job = schedule.scheduleJob("0 0 * * * 1-5", async () => {
   try {
     await csvDownload();
     await csvProcess();
+    csvArchive();
   } catch (err) {
-    logger.error("Scheduled task failed: CSV download and processing");
-    logger.error(err.message);
+    loggerError(err.message, "App level scheduled CSV job failed.", "csv");
   }
-  csvArchive();
 });
 
 app.use("/api", arkRouter);

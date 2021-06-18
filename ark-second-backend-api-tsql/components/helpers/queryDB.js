@@ -3,6 +3,10 @@ const log4js = require("log4js");
 
 ////////////////////////////////////////////////////////////////
 
+const { loggerError, loggerInfo } = require("./logger");
+
+////////////////////////////////////////////////////////////////
+
 const sqlConfig = {
   user: process.env.DB_USER,
   password: process.env.DB_PWD,
@@ -21,24 +25,17 @@ const sqlConfig = {
 const pool = new sql.ConnectionPool(sqlConfig);
 const poolConnect = pool.connect();
 
-log4js.configure({
-  appenders: {
-    queryDB: { type: "file", filename: "./logs/error.log" },
-  },
-  categories: { default: { appenders: ["queryDB"], level: process.env.LOG_LEVEL } },
-});
-const logger = log4js.getLogger("queryDB");
-
 ////////////////////////////////////////////////////////////////
 
 // returns an array with status code and queried data if available
 const queryDB = async (query) => {
+  loggerInfo("Querying request called: " + query, "dbReq")
   await poolConnect;
   try {
     result = await pool.request().query(query);
     return [200, result];
   } catch (err) {
-    logger.error(err.message + " for " + query);
+    loggerError(err.message, "Following querying request failed: " + query, "dbReq");
     return [500];
   }
 };
