@@ -33,7 +33,7 @@ module.exports = async (req, res, next) => {
         user: user.user,
         firstName: user.firstName,
         lastName: user.lastName,
-        email: user.email,
+        email: user.email
       };
 
       next();

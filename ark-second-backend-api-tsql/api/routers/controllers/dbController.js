@@ -6,146 +6,161 @@ const HttpError = require("../../../components/models/http-error");
 
 ////////////////////////////////////////////////////////////////
 
-// returns all the data from db
+// returns all holdings
 const getDB = async (req, res, next) => {
   const query =
-    "select [c].[companyid], [c].[companyname], [c].[ticker], [c].[cusip], [h].[date], [h].[shares], [h].[marketvalue], [h].[weight] from [Shares].[Companies] as c join [Shares].[Holdings] as h on c.companyid = h.companyid";
-  queryDB(query).then(result => {
-    if (result[0] === 200) {
-      res.status(200).json(result[1].recordsets[0])
-    } else {
-      return next(new HttpError("Something went wrong.", result[0]))
-    }
-  }).catch(err => {
-    return next(new HttpError("Something went wrong. Couldn't get data", 500));
-  });
+    "select [f].[fundName], [f].[description], [c].[companyName], [c].[ticker], [c].[cusip], [h].[date], [h].[shares], [h].[marketValue], [h].[weight] from [Shares].[Fund] as [f] join [Shares].[Holding] as h on [f].[Id] = [h].[fundId] join [Shares].[Company] as [c] on [c].[Id] = [h].[companyId]";
+  queryDB(query)
+    .then((result) => {
+      if (result[0] === 200) {
+        res.status(200).json(result[1].recordsets[0]);
+      } else {
+        return next(new HttpError("Something went wrong.", result[0]));
+      }
+    })
+    .catch((err) => {
+      return next(
+        new HttpError("Something went wrong. Couldn't get data", 500)
+      );
+    });
 };
 
-// returns all companies
-const getCompanies = async (req, res, next) => {
+// returns funds
+const getFunds = async (req, res, next) => {
   const query =
-    "select [c].[companyid], [c].[companyname], [c].[ticker], [c].[cusip] from [Shares].[Companies] as c";
-  queryDB(query).then(result => {
-    if (result[0] === 200) {
-      res.status(200).json(result[1].recordsets[0])
-    } else {
-      return next(new HttpError("Something went wrong.", result[0]))
-    }
-  }).catch(err => {
-    return next(new HttpError("Something went wrong. Couldn't get data", 500));
-  });
+    "select [f].[fundName], [f].[description] from [Shares].[Fund] as [f]";
+  queryDB(query)
+    .then((result) => {
+      if (result[0] === 200) {
+        res.status(200).json(result[1].recordsets[0]);
+      } else {
+        return next(new HttpError("Something went wrong.", result[0]));
+      }
+    })
+    .catch((err) => {
+      return next(
+        new HttpError("Something went wrong. Couldn't get data", 500)
+      );
+    });
 };
 
-// returns all companies and shares per today
-const getShares = async (req, res, next) => {
+// returns companies in funds
+const getFundCompanies = async (req, res, next) => {
+  const fund = req.params.fund;
+  const query = `select [f].[fundName], [f].[description], [c].[companyName], [c].[ticker], [c].[cusip] from [Shares].[Fund] as [f] join [Shares].[Holding] as h on [f].[Id] = [h].[fundId] join [Shares].[Company] as [c] on [c].[Id] = [h].[companyId] where [f].[fundName] = ${fund}`;
+  queryDB(query)
+    .then((result) => {
+      if (result[0] === 200) {
+        res.status(200).json(result[1].recordsets[0]);
+      } else {
+        return next(new HttpError("Something went wrong.", result[0]));
+      }
+    })
+    .catch((err) => {
+      return next(
+        new HttpError("Something went wrong. Couldn't get data", 500)
+      );
+    });
+};
+
+// returns all holdings in fund
+const getFundAll = async (req, res, next) => {
+  const fund = req.params.fund;
+  const order = req.params.order;
+  const query = `select [f].[fundName], [f].[description], [c].[companyName], [c].[ticker], [c].[cusip], [h].[date], [h].[shares], [h].[marketValue], [h].[weight] from [Shares].[Fund] as [f] join [Shares].[Holding] as h on [f].[Id] = [h].[fundId] join [Shares].[Company] as [c] on [c].[Id] = [h].[companyId] where [f].[fundName] = ${fund} order by [${order}]`;
+  queryDB(query)
+    .then((result) => {
+      if (result[0] === 200) {
+        res.status(200).json(result[1].recordsets[0]);
+      } else {
+        return next(new HttpError("Something went wrong.", result[0]));
+      }
+    })
+    .catch((err) => {
+      return next(
+        new HttpError("Something went wrong. Couldn't get data", 500)
+      );
+    });
+};
+
+// returns latest holdings in fund
+const getFundNew = async (req, res, next) => {
+  const fund = req.params.fund;
+  const order = req.params.order;
   const query =
-    "select [c].[companyid], [c].[companyname], [c].[ticker], [c].[cusip], [h].[date], [h].[shares] from [Shares].[Companies] as c join [Shares].[Holdings] as h on [c].[companyid] = [h].[companyid] where [h].[date] = (select top (1) MAX([h].[date]) over() from [Shares].[Holdings] as h)";
-  queryDB(query).then(result => {
-    if (result[0] === 200) {
-      res.status(200).json(result[1].recordsets[0])
-    } else {
-      return next(new HttpError("Something went wrong.", result[0]))
-    }
-  }).catch(err => {
-    return next(new HttpError("Something went wrong. Couldn't get data", 500));
-  });
+    `with all_holdings ([fundName],[description],[companyName],[ticker],[cusip],[date],[shares],[marketValue],[weight]) as ( select [f].[fundName], [f].[description], [c].[companyName], [c].[ticker], [c].[cusip], [h].[date], [h].[shares], [h].[marketValue], [h].[weight] from [Shares].[Fund] as [f]  join [Shares].[Holding] as h on [f].[Id] = [h].[fundId]  join [Shares].[Company] as [c] on [c].[Id] = [h].[companyId] ) ` +
+    `select [ah].[fundName], [ah].[description], [ah].[companyName], [ah].[ticker], [ah].[cusip], [ah].[date], [ah].[shares], [ah].[marketValue], [ah].[weight] from [all_holdings] as [ah] ` +
+    `join ( select [ah].[fundName], [ah].[companyName], MAX([ah].[date]) as [maxDate] from [all_holdings] as [ah] group by [ah].[fundName], [ah].[companyName]) as [md] on [md].[fundName] = [ah].[fundName] and [md].[companyName] = [ah].[companyName] ` +
+    `where [ah].[fundName] = ${fund} and [ah].[date] = [md].[maxDate] ` +
+    `order by ${order}`;
+  queryDB(query)
+    .then((result) => {
+      if (result[0] === 200) {
+        res.status(200).json(result[1].recordsets[0]);
+      } else {
+        return next(new HttpError("Something went wrong.", result[0]));
+      }
+    })
+    .catch((err) => {
+      return next(
+        new HttpError("Something went wrong. Couldn't get data", 500)
+      );
+    });
 };
 
-// returns all companies and market value today
-const getMarketValue = async (req, res, next) => {
+// returns all holdings in fund for a company
+const getCompanyAll = async (req, res, next) => {
+  const fund = req.params.fund;
+  const order = req.params.order;
+  const ticker = req.params.ticker;
+  const query = `select [f].[fundName], [f].[description], [c].[companyName], [c].[ticker], [c].[cusip], [h].[date], [h].[shares], [h].[marketValue], [h].[weight] from [Shares].[Fund] as [f] join [Shares].[Holding] as h on [f].[Id] = [h].[fundId] join [Shares].[Company] as [c] on [c].[Id] = [h].[companyId] where [f].[fundName] = ${fund} and [c].[ticker] = ${ticker} order by [${order}]`;
+  queryDB(query)
+    .then((result) => {
+      if (result[0] === 200) {
+        res.status(200).json(result[1].recordsets[0]);
+      } else {
+        return next(new HttpError("Something went wrong.", result[0]));
+      }
+    })
+    .catch((err) => {
+      return next(
+        new HttpError("Something went wrong. Couldn't get data", 500)
+      );
+    });
+};
+
+// returns latest holding in fund for a company
+const getCompanyNew = async (req, res, next) => {
+  const fund = req.params.fund;
+  const order = req.params.order;
+  const ticker = req.params.ticker;
   const query =
-    "select [c].[companyid], [c].[companyname], [c].[ticker], [c].[cusip], [h].[date], [h].[marketvalue] from [Shares].[Companies] as c join [Shares].[Holdings] as h on [c].[companyid] = [h].[companyid] where [h].[date] = (select top (1) MAX([h].[date]) over() from [Shares].[Holdings] as h)";
-  queryDB(query).then(result => {
-    if (result[0] === 200) {
-      res.status(200).json(result[1].recordsets[0])
-    } else {
-      return next(new HttpError("Something went wrong.", result[0]))
-    }
-  }).catch(err => {
-    return next(new HttpError("Something went wrong. Couldn't get data", 500));
-  });
+    `with all_holdings ([fundName],[description],[companyName],[ticker],[cusip],[date],[shares],[marketValue],[weight]) as ( select [f].[fundName], [f].[description], [c].[companyName], [c].[ticker], [c].[cusip], [h].[date], [h].[shares], [h].[marketValue], [h].[weight] from [Shares].[Fund] as [f]  join [Shares].[Holding] as h on [f].[Id] = [h].[fundId]  join [Shares].[Company] as [c] on [c].[Id] = [h].[companyId] ) ` +
+    `select [ah].[fundName], [ah].[description], [ah].[companyName], [ah].[ticker], [ah].[cusip], [ah].[date], [ah].[shares], [ah].[marketValue], [ah].[weight] from [all_holdings] as [ah] ` +
+    `join ( select [ah].[fundName], [ah].[companyName], MAX([ah].[date]) as [maxDate] from [all_holdings] as [ah] group by [ah].[fundName], [ah].[companyName]) as [md] on [md].[fundName] = [ah].[fundName] and [md].[companyName] = [ah].[companyName] ` +
+    `where [ah].[fundName] = ${fund} and [ah].[date] = [md].[maxDate] and [ah].[ticker] = ${ticker} ` +
+    `order by ${order}`;
+  queryDB(query)
+    .then((result) => {
+      if (result[0] === 200) {
+        res.status(200).json(result[1].recordsets[0]);
+      } else {
+        return next(new HttpError("Something went wrong.", result[0]));
+      }
+    })
+    .catch((err) => {
+      return next(
+        new HttpError("Something went wrong. Couldn't get data", 500)
+      );
+    });
 };
-
-// returns all companies and weight today
-const getWeight = async (req, res, next) => {
-  const query =
-    "select [c].[companyid], [c].[companyname], [c].[ticker], [c].[cusip], [h].[date], [h].[weight] from [Shares].[Companies] as c join [Shares].[Holdings] as h on [c].[companyid] = [h].[companyid] where [h].[date] = (select top (1) MAX([h].[date]) over() from [Shares].[Holdings] as h)";
-  queryDB(query).then(result => {
-    if (result[0] === 200) {
-      res.status(200).json(result[1].recordsets[0])
-    } else {
-      return next(new HttpError("Something went wrong.", result[0]))
-    }
-  }).catch(err => {
-    return next(new HttpError("Something went wrong. Couldn't get data", 500));
-  });
-};
-
-// returns all data from today
-const getToday = async (req, res, next) => {
-  const query =
-    "select [c].[companyid], [c].[companyname], [c].[ticker], [c].[cusip], [h].[date], [h].[shares], [h].[marketvalue], [h].[weight] from [Shares].[Companies] as c join [Shares].[Holdings] as h on [c].[companyid] = [h].[companyid] where [h].[date] = (select top (1) MAX([h].[date]) over() from [Shares].[Holdings] as h)";
-  queryDB(query).then(result => {
-    if (result[0] === 200) {
-      res.status(200).json(result[1].recordsets[0])
-    } else {
-      return next(new HttpError("Something went wrong.", result[0]))
-    }
-  }).catch(err => {
-    return next(new HttpError("Something went wrong. Couldn't get data", 500));
-  });
-};
-
-// returns difference between all data between 2 dates --
-// const getDB = async (req, res, next) => {
-//   const query =
-//     "select [c].[companyid], [c].[companyname], [c].[ticker], [c].[cusip], [h].[date], [h].[shares], [h].[marketvalue], [h].[weight] from [Shares].[Companies] as c join [Shares].[Holdings] as h on c.companyid = h.companyid";
-//   queryDB(query).then(result => {
-//     if (result[0] === 200) {
-//       res.status(200).json(JSON.stringify(result[1].recordsets[0]))
-//     } else {
-//       res.status(result[0]);
-//     }
-//   }).catch(err => {
-//     res.status(500);
-//   });
-// };
-
-// returns all data for a specified company --
-// const getDB = async (req, res, next) => {
-//   const query =
-//     "select [c].[companyid], [c].[companyname], [c].[ticker], [c].[cusip], [h].[date], [h].[shares], [h].[marketvalue], [h].[weight] from [Shares].[Companies] as c join [Shares].[Holdings] as h on c.companyid = h.companyid";
-//   queryDB(query).then(result => {
-//     if (result[0] === 200) {
-//       res.status(200).json(JSON.stringify(result[1].recordsets[0]))
-//     } else {
-//       res.status(result[0]);
-//     }
-//   }).catch(err => {
-//     res.status(500);
-//   });
-// };
-
-// returns difference between all data for a specified company between 2 dates --
-// const getDB = async (req, res, next) => {
-//   const query =
-//     "select [c].[companyid], [c].[companyname], [c].[ticker], [c].[cusip], [h].[date], [h].[shares], [h].[marketvalue], [h].[weight] from [Shares].[Companies] as c join [Shares].[Holdings] as h on c.companyid = h.companyid";
-//   queryDB(query).then(result => {
-//     if (result[0] === 200) {
-//       res.status(200).json(JSON.stringify(result[1].recordsets[0]))
-//     } else {
-//       res.status(result[0]);
-//     }
-//   }).catch(err => {
-//     res.status(500);
-//   });
-// };
 
 ////////////////////////////////////////////////////////////////
 
 exports.getDB = getDB;
-exports.getCompanies = getCompanies;
-exports.getShares = getShares;
-exports.getMarketValue = getMarketValue;
-exports.getWeight = getWeight;
-exports.getToday = getToday;
+exports.getFunds = getFunds;
+exports.getFundCompanies = getFundCompanies;
+exports.getFundAll = getFundAll;
+exports.getFundNew = getFundNew;
+exports.getCompanyAll = getCompanyAll;
+exports.getCompanyNew = getCompanyNew;

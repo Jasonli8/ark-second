@@ -5,6 +5,7 @@ const router = express.Router();
 
 /////////////////////////////////////////////////////////////////////
 
+const authParse = require("../../middleware/authParse");
 const userController = require("./controllers/userController");
 
 /////////////////////////////////////////////////////////////////////
@@ -27,9 +28,30 @@ router.post(
   userController.login
 );
 router.post(
-  "/recovery",
+  "/recovery/user",
+  [check("email").isEmail()],
+  userController.userRecovery
+);
+router.get(
+  "/recovery/password",
   [check("user").isLength({ min: 1 })],
-  userController.recovery
+  userController.passwordRecovery
+);
+router.post(
+  "./recover/passwordConfirm",
+  [check("user").isLength({ min: 1 }), check("answer").isLength({ min: 1 })],
+  userController.passwordRecoveryComfirmation
+);
+
+router.use(authParse);
+
+router.post(
+  "./recover/updatePassword",
+  [
+    check("password").isLength({ min: 1 }),
+    check("confirmPassword").isLength({ min: 1 }),
+  ],
+  userController.updatePassword
 );
 
 /////////////////////////////////////////////////////////////////////

@@ -11,11 +11,16 @@ const auth = async (user, password) => {
   let result;
   let resultParse;
   try {
-    const query1 = `SELECT * FROM [User].[Users] WHERE [user] = ${user}`;
+    const query1 = `SELECT * FROM [User].[User] WHERE [user] = ${user}`;
     result = await queryDB(query1);
     resultParse = result[1].recordsets[0][0];
     if (!resultParse) {
-      return;
+      return next(
+        new HttpError(
+          "Username and password don't match or don't exist",
+          400
+        )
+      );
     }
   } catch (err) {
     loggerError(err.message, "Failed to get user data in auth", "auth");
@@ -48,7 +53,12 @@ const auth = async (user, password) => {
       email: resultParse.email,
     };
   } else {
-    return;
+    return next(
+      new HttpError(
+        "Username and password don't match or don't exist",
+        400
+      )
+    );
   }
 };
 
