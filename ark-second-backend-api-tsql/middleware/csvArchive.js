@@ -7,12 +7,13 @@ const { loggerError, loggerInfo } = require("../components/helpers/logger");
 
 ////////////////////////////////////////////////////////////////
 
-const csvArchive = () => {
+const csvArchive = async () => {
+  console.log("Beginning scheduled CSV archive");
   let ETF;
   try {
     const query = "SELECT [csvName] FROM [Shares].[Fund]";
     const result = await queryDB(query);
-    ETF = result[1].recordset[0];
+    ETF = result[1].recordset;
     console.log(ETF);
   } catch (err) {
     loggerError(
@@ -22,7 +23,7 @@ const csvArchive = () => {
     );
   }
 
-  for (let fund in ETF) {
+  ETF.forEach(async function (fund) {
     if (fs.existsSync(`../csv/${fund.csvName}.csv`)) {
       const currDate = new Date();
       const date = `${currDate.getFullYear()}-${currDate.getMonth()}-${currDate.getDate()}`;
@@ -46,7 +47,8 @@ const csvArchive = () => {
         }
       );
     }
-  }
+  })
+  console.log("Finishing scheduled CSV archive");
 };
 
 ////////////////////////////////////////////////////////////////

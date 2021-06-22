@@ -1,0 +1,14 @@
+1. Stocks
+get fund holding by date getFundsHoldingByDate (string fundType, date date)
+get specific fund by ticker getFundHoldingByTicker (string fundType, string ticker, string range)
+get specific fund holding change by ticker getFundHoldingChangeByTicker (string ticker, string range)
+get list of funds getFunds ()
+
+2. User Account
+get user by username getUserByUserName (string userName)
+get security questions getSecurityQuestions()
+get user security question by username (done)
+
+3. yahoo finance api
+get stock history by ticker (string ticker)
+get current quote by ticker (string ticker)

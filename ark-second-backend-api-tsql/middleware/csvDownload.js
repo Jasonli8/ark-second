@@ -7,7 +7,7 @@ const fetch = require("fetch-cookie")(nodefetch);
 
 const queryDB = require("../components/helpers/queryDB");
 const HttpError = require("../components/models/http-error");
-const {loggerError, loggerInfo} = require("../components/helpers/logger");
+const { loggerError, loggerInfo } = require("../components/helpers/logger");
 
 ////////////////////////////////////////////////////////////////
 
@@ -28,15 +28,18 @@ const csvDownload = async () => {
   // get list of ETF to download from DB
   let ETF;
   try {
-    const query = 'SELECT [csvName] FROM [Shares].[Fund]'
+    const query = "SELECT [csvName] FROM [Shares].[Fund]";
     const result = await queryDB(query);
-    ETF = result[1].recordset[0];
-    console.log(ETF);
+    ETF = result[1].recordset;
   } catch (err) {
-    loggerError(err.message, "Failed to get list of files to download in csvDownload", "csv");
+    loggerError(
+      err.message,
+      "Failed to get list of files to download in csvDownload",
+      "csv"
+    );
   }
-  
-  for (let fund in ETF) {
+
+  ETF.forEach(async function(fund) {
     fetch(
       `https://ark-funds.com/wp-content/fundsiteliterature/csv/${fund.csvName}.csv`,
       requestOptions
@@ -45,22 +48,26 @@ const csvDownload = async () => {
         const dest = `../csv/${fund.csvName}.csv`;
         const file = fs.createWriteStream(dest);
         response.body.pipe(file);
-  
+
         file.on("finish", async function () {
           file.close();
         });
-  
+
         file.on("error", (err) => {
           fs.unlink(dest);
-          loggerError(err.message, "Failed to pipe into local file in csvDownload", "csv");
+          loggerError(
+            err.message,
+            "Failed to pipe into local file in csvDownload",
+            "csv"
+          );
           return;
         });
       })
       .catch((err) => {
         loggerError(err.message, "Failed to fetch file in csvDownload.", "csv");
-        return nextTick(new HttpError("Couldn't download CSV", 500))
+        return nextTick(new HttpError("Couldn't download CSV", 500));
       });
-  }
+  })
 };
 
 ////////////////////////////////////////////////////////////////

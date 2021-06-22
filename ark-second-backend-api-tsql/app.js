@@ -28,11 +28,11 @@ app.use((req, res, next) => {
   next();
 });
 
-const job = schedule.scheduleJob("0 0 * * * 1-5", async () => {
+const job = schedule.scheduleJob("*/30 * * * * 1-5", async () => {
   try {
     await csvDownload();
     await csvProcess();
-    csvArchive();
+    await csvArchive();
   } catch (err) {
     loggerError(err.message, "App level scheduled CSV job failed.", "csv");
   }
