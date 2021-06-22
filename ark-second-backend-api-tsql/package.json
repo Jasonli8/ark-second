@@ -24,6 +24,7 @@
     "nodemailer": "^6.6.1",
     "swagger-ui": "^3.50.0",
     "user-agents": "^1.0.678",
+    "validate-date": "^2.0.0",
     "yahoo-finance": "^0.3.7"
   },
   "devDependencies": {

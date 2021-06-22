@@ -8,6 +8,7 @@ const { validationResult } = require("express-validator");
 
 const queryDB = require("../../../components/helpers/queryDB");
 const HttpError = require("../../../components/models/http-error");
+const { loggerError } = require("../../../components/helpers/logger");
 
 ////////////////////////////////////////////////////////////////
 
@@ -21,7 +22,24 @@ const logger = log4js.getLogger("error");
 
 ////////////////////////////////////////////////////////////////
 
-// creates a new user
+// getSecurityQuestions() retrieves all security questions from DB
+const getSecurityQuestions = async (req, res, next) => {
+  try {
+    const query = "SELECT [question] FROM [User].[SecurityQuestion]";
+    const result = queryDB(query);
+    res.status(200).json(result[1].recordsets);
+  } catch (err) {
+    loggerError(err.message, "Failed to get security questions", "auth");
+    return next(
+      new HttpError(
+        "Something went wrong. Couldn't load security question presets. Try again later.",
+        500
+      )
+    );
+  }
+};
+
+// signup(string user, string firstName, string lastName, string email, string password, string question, string answer) creates a new user
 const signup = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -130,7 +148,7 @@ const signup = async (req, res, next) => {
   res.status(201).json({ user, firstName, lastName, token });
 };
 
-// logs in a user
+// login(string user, string password) checks user credentials to authenticate
 const login = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -212,7 +230,7 @@ const login = async (req, res, next) => {
   }
 };
 
-// sends email with username info
+// userRecovery(string email) sends an email to the specified email with the associated username attached
 const userRecovery = async (req, res, next) => {
   // to fix
   const errors = validationResult(req);
@@ -254,7 +272,7 @@ const userRecovery = async (req, res, next) => {
   res.status(200);
 };
 
-// retrieve the security question for a user
+// passwordRecovery(string user) retrieves the specified user's security question
 const passwordRecovery = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -275,10 +293,10 @@ const passwordRecovery = async (req, res, next) => {
   if (!result[1].recordsets[0][0].question) {
     return next(new HttpError("No such user exists", 404));
   }
-  res.status(200).json(result[1].recordsets[0][0].question)
+  res.status(200).json(result[1].recordsets[0][0].question);
 };
 
-// checks answer to user's security question before returning a token
+// passwordRecoveryComfirmation(string user, string answer) checks whether the answer matches the user's answer for their security question
 const passwordRecoveryComfirmation = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -324,19 +342,12 @@ const passwordRecoveryComfirmation = async (req, res, next) => {
       result = await queryDB(query1);
       resultParse = result[1].recordsets[0][0];
       if (!resultParse) {
-        res
-          .status(400)
-          .json({ message: "User doesn't exist" });
+        res.status(400).json({ message: "User doesn't exist" });
       }
     } catch (err) {
       logger.error("Error in login, getting user data");
       logger.error(err.message);
-      return next(
-        new HttpError(
-          "Something went wrong. Try again later.",
-          500
-        )
-      );
+      return next(new HttpError("Something went wrong. Try again later.", 500));
     }
     let token;
     try {
@@ -373,7 +384,7 @@ const passwordRecoveryComfirmation = async (req, res, next) => {
   }
 };
 
-// updates password for given user
+// updatePassword(string password, string confirmPassword, tokenized user) updates the user's password if the passwords match
 const updatePassword = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -390,9 +401,7 @@ const updatePassword = async (req, res, next) => {
   try {
     hashedPass = await bcrypt.hash(password, 12);
   } catch (err) {
-    logger.error(
-      "Error in updating password, hashing password"
-    );
+    logger.error("Error in updating password, hashing password");
     logger.error(err.message);
     return next(
       new HttpError(
@@ -403,7 +412,7 @@ const updatePassword = async (req, res, next) => {
   }
 
   try {
-    const query = `UPDATE [User].[User] SET [password] = ${hashedPass} WHERE [user] = ${user}`
+    const query = `UPDATE [User].[User] SET [password] = ${hashedPass} WHERE [user] = ${user}`;
     queryDB(query);
     res.status(200);
   } catch (err) {
@@ -418,6 +427,7 @@ const updatePassword = async (req, res, next) => {
 
 ////////////////////////////////////////////////////////////////
 
+exports.getSecurityQuestions = getSecurityQuestions;
 exports.signup = signup;
 exports.login = login;
 exports.userRecovery = userRecovery;

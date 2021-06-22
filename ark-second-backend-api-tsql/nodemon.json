@@ -5,6 +5,6 @@
         "DB_PWD": "arksecond123",
         "DB_NAME": "ASTS",
         "EN_KEY": "DTRNtNc71O",
-        "LOG_LEVEL" : "debug"
+        "LOG_LEVEL": "debug"
     }
 }

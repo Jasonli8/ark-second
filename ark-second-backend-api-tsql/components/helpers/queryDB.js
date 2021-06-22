@@ -1,9 +1,8 @@
 const sql = require("mssql");
-const log4js = require("log4js");
 
 ////////////////////////////////////////////////////////////////
 
-const { loggerError, loggerInfo } = require("./logger");
+const { loggerError, loggerDebug } = require("./logger");
 
 ////////////////////////////////////////////////////////////////
 
@@ -29,7 +28,7 @@ const poolConnect = pool.connect();
 
 // returns an array with status code and queried data if available
 const queryDB = async (query) => {
-  loggerInfo("Querying request called: " + query, "dbReq")
+  loggerDebug("Querying request called: " + query, "dbReq")
   await poolConnect;
   try {
     result = await pool.request().query(query);

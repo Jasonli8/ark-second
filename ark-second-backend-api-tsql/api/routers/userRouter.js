@@ -1,5 +1,5 @@
 const express = require("express");
-const { check } = require("express-validator");
+const { body } = require("express-validator");
 
 const router = express.Router();
 
@@ -10,47 +10,58 @@ const userController = require("./controllers/userController");
 
 /////////////////////////////////////////////////////////////////////
 
+// retrieves all security questions from DB
+router.get('/questions', userController.getSecurityQuestions);
+
+// creates a new user
 router.post(
   "/signup",
-  [
-    check("user").isLength({ min: 1, max: 50 }),
-    check("firstName").isLength({ min: 1, max: 50 }),
-    check("lastName").isLength({ min: 1, max: 50 }),
-    check("email").isEmail(),
-    check("email").isLength({ min: 1, max: 50 }),
-    check("password").isLength({ min: 1, max: 50 }),
-  ],
+  body("user").isLength({ min: 1, max: 50 }),
+  body("firstName").isLength({ min: 1, max: 50 }),
+  body("lastName").isLength({ min: 1, max: 50 }),
+  body("email").isEmail(),
+  body("email").isLength({ min: 1, max: 50 }),
+  body("password").isLength({ min: 1, max: 50 }),
   userController.signup
 );
+
+// checks user credentials to authenticate
 router.post(
   "/login",
-  [check("user").isLength({ min: 1 }), check("password").isLength({ min: 1 })],
+  body("user").isLength({ min: 1 }),
+  body("password").isLength({ min: 1 }),
   userController.login
 );
+
+// sends an email to the specified email with the associated username attached
 router.post(
   "/recovery/user",
-  [check("email").isEmail()],
+  body("email").isEmail(),
   userController.userRecovery
 );
+
+// retrieves the specified user's security question
 router.get(
   "/recovery/password",
-  [check("user").isLength({ min: 1 })],
+  body("user").isLength({ min: 1 }),
   userController.passwordRecovery
 );
+
+// checks whether the answer matches the user's answer for their security question
 router.post(
   "./recover/passwordConfirm",
-  [check("user").isLength({ min: 1 }), check("answer").isLength({ min: 1 })],
+  body("user").isLength({ min: 1 }),
+  body("answer").isLength({ min: 1 }),
   userController.passwordRecoveryComfirmation
 );
 
 router.use(authParse);
 
+// updates the user's password if the passwords match
 router.post(
   "./recover/updatePassword",
-  [
-    check("password").isLength({ min: 1 }),
-    check("confirmPassword").isLength({ min: 1 }),
-  ],
+  body("password").isLength({ min: 1 }),
+  body("confirmPassword").isLength({ min: 1 }),
   userController.updatePassword
 );
 

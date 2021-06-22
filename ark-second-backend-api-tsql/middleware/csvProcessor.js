@@ -5,7 +5,7 @@ const readline = require("readline");
 
 const HttpError = require("../components/models/http-error");
 const queryDB = require("../components/helpers/queryDB");
-const { loggerError, loggerInfo } = require("../components/helpers/logger");
+const { loggerError, loggerInfo, loggerDebug } = require("../components/helpers/logger");
 
 ////////////////////////////////////////////////////////////////
 
@@ -18,7 +18,6 @@ const isEmpty = (target) => {
 };
 
 const csvProcess = async () => {
-  console.log("Starting to process current CSV.");
   loggerInfo("Starting to process current CSV.", "csv");
   let ETF;
   try {
@@ -37,7 +36,7 @@ const csvProcess = async () => {
   ETF.forEach(async function (fund) {
     const dest = `../csv/${fund.csvName}.csv`;
     if (fs.existsSync(dest)) {
-      loggerInfo("CSV found.", "csv");
+      loggerDebug(`CSV found for ${fund.csvName}`, "csv");
       const file = readline.createInterface({
         input: fs.createReadStream(dest),
         output: process.stdout,
@@ -58,7 +57,7 @@ const csvProcess = async () => {
             file.close();
             file.removeAllListeners();
             lineNum += 1;
-            console.log("end of data");
+            loggerDebug(`Finished ${fund.csvName}`, "csv")
             return;
           } else if (isEmpty(data[0]) || isEmpty(data[1])) {
             lineNum += 1;
@@ -111,10 +110,10 @@ const csvProcess = async () => {
         lineNum += 1;
       });
     } else {
-      loggerInfo("No CSV available", "csv");
+      loggerInfo(`No CSV available for ${fund.csvName}`, "csv");
     }
   })
-  console.log("Finishing to process current CSV.");
+  loggerInfo("Finishing to process current CSV.", "csv");
 };
 
 module.exports = csvProcess;
