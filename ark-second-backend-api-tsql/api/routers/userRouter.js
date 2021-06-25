@@ -22,6 +22,8 @@ router.post(
   body("email").isEmail(),
   body("email").isLength({ min: 1, max: 50 }),
   body("password").isLength({ min: 1, max: 50 }),
+  body("question").isString(),
+  body("answer").isString(),
   userController.signup
 );
 

@@ -12,20 +12,15 @@ const checkDate = (date) => {
   if (!dateIsValid) {
     return next(new HttpError("Invalid date was entered", 400));
   }
-
-  let dateFormat1 = validateDate(
+  const format = date.includes("-") ? "yyyy-mm-dd" : "mm/dd/yyyy"
+  let check = validateDate(
     date,
-    (responseType = "boolean"),
-    (dateFormat = "mm/dd/yyyy")
+    responseType = "boolean",
+    dateFormat = format
   );
-  let dateFormat2 = validateDate(
-    date,
-    (responseType = "boolean"),
-    (dateFormat = "yyyy-mm-dd")
-  );
-  if (!dateFormat1 && !dateFormat2) {
+  if (!check) {
     return next(new HttpError("Invalid date format was entered", 422));
-  } else if (!dateFormat2) {
+  } else if (date.includes("/")) {
     const dateParts = date.split("/");
     const newDate = `'${dateParts[2]}-${dateParts[0]}-${dateParts[1]}'`;
     return newDate;

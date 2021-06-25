@@ -1,4 +1,3 @@
-const log4js = require("log4js");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
@@ -9,16 +8,6 @@ const { validationResult } = require("express-validator");
 const queryDB = require("../../../components/helpers/queryDB");
 const HttpError = require("../../../components/models/http-error");
 const { loggerError } = require("../../../components/helpers/logger");
-
-////////////////////////////////////////////////////////////////
-
-log4js.configure({
-  appenders: { error: { type: "file", filename: "./logs/error.log" } },
-  categories: {
-    default: { appenders: ["error"], level: process.env.LOG_LEVEL },
-  },
-});
-const logger = log4js.getLogger("error");
 
 ////////////////////////////////////////////////////////////////
 
@@ -50,7 +39,7 @@ const signup = async (req, res, next) => {
     req.body;
   let existingUser;
   try {
-    const query1 = `SELECT * FROM [User].[User] WHERE [user] = ${user}`;
+    const query1 = `SELECT * FROM [User].[User] WHERE [userName] = '${user}'`;
     const result = await queryDB(query1);
     if (result[0]) {
       res
@@ -58,8 +47,11 @@ const signup = async (req, res, next) => {
         .json({ message: "A user with the chosen username already exists" });
     }
   } catch (err) {
-    logger.error("Error in signup, checking for existing users");
-    logger.error(err.message);
+    loggerError(
+      err.message,
+      "Error in signup, checking for existing users",
+      "auth"
+    );
     return next(
       new HttpError(
         "Something went wrong. Failed to create user. Try again later.",
@@ -92,10 +84,11 @@ const signup = async (req, res, next) => {
     hashedPass = await bcrypt.hash(password, 12);
     hashedAnswer = await bcrypt.hash(answer, 12);
   } catch (err) {
-    logger.error(
-      "Error in signup, hashing password and security question answer"
+    loggerError(
+      err.message,
+      "Error in signup, hashing password and security question answer",
+      "auth"
     );
-    logger.error(err.message);
     return next(
       new HttpError(
         "Something went wrong. Failed to create user. Try again later.",
@@ -117,8 +110,7 @@ const signup = async (req, res, next) => {
       `COMMIT TRAN T1`;
     await queryDB(query4);
   } catch (err) {
-    logger.error("Error in signup, creating user");
-    logger.error(err.message);
+    loggerError(err.message, "Error in signup, creating user", "auth");
     return next(
       new HttpError(
         "Something went wrong. Failed to create user. Try again later.",
@@ -135,8 +127,7 @@ const signup = async (req, res, next) => {
       { expiresIn: "1h" }
     );
   } catch (err) {
-    logger.error("Error in signup, creating token");
-    logger.error(err.message);
+    loggerError(err.message, "Error in signup, creating token", "auth");
     return next(
       new HttpError(
         "Something went wrong. User created but failed to log in. Try to log in later.",
@@ -159,7 +150,7 @@ const login = async (req, res, next) => {
   let result;
   let resultParse;
   try {
-    const query1 = `SELECT * FROM [User].[User] WHERE [user] = ${user}`;
+    const query1 = `SELECT * FROM [User].[User] WHERE [userName] = '${user}'`;
     result = await queryDB(query1);
     resultParse = result[1].recordsets[0][0];
     if (!resultParse) {
@@ -168,8 +159,7 @@ const login = async (req, res, next) => {
         .json({ message: "User and password don't match or don't exist" });
     }
   } catch (err) {
-    logger.error("Error in login, getting user data");
-    logger.error(err.message);
+    loggerError(err.message, "Error in login, getting user data", "auth");
     return next(
       new HttpError(
         "Something went wrong. Failed to login. Try again later.",
@@ -182,8 +172,7 @@ const login = async (req, res, next) => {
   try {
     isValidPass = await bcrypt.compare(password, resultParse.password);
   } catch (err) {
-    logger.error("Error in login, unencrypting password");
-    logger.error(err.message);
+    loggerError(err.message, "Error in login, unencrypting password", "auth");
     return next(
       new HttpError(
         "Something went wrong. Failed to login. Try again later.",
@@ -197,7 +186,7 @@ const login = async (req, res, next) => {
     try {
       token = await jwt.sign(
         {
-          user: resultParse.user,
+          user: resultParse.userName,
           firstName: resultParse.firstName,
           lastName: resultParse.lastName,
           email: resultParse.email,
@@ -206,8 +195,7 @@ const login = async (req, res, next) => {
         { expiresIn: "1h" }
       );
     } catch (err) {
-      logger.error("Error in signup, creating token");
-      logger.error(err.message);
+      loggerError(err.message, "Error in signup, creating token", "auth");
       return next(
         new HttpError(
           "Something went wrong. Failed to log in. Try to log in later.",
@@ -217,7 +205,7 @@ const login = async (req, res, next) => {
     }
     res.status(200).json(
       JSON.stringify({
-        user: resultParse.user,
+        user: resultParse.userName,
         firstName: resultParse.firstName,
         lastName: resultParse.lastName,
         token,
@@ -240,13 +228,17 @@ const userRecovery = async (req, res, next) => {
 
   let result;
   try {
-    const query = `SELECT [user] FROM [User].[Users] WHERE [email] = ${req.body.email}`;
+    const query = `SELECT [userName] FROM [User].[User] WHERE [email] = ${req.body.email}`;
     result = await queryDB(query);
   } catch (err) {
-    logger.error("Error in recovery, failed to search for users");
+    loggerError(
+      err.message,
+      "Error in recovery, failed to search for users",
+      "auth"
+    );
     return next(new HttpError("Something went wrong. Try again later", 500));
   }
-  if (!result[1].recordsets[0][0].user) {
+  if (!result[1].recordsets[0][0].userName) {
     return next(new HttpError("Email has no such user", 404));
   }
 
@@ -266,7 +258,7 @@ const userRecovery = async (req, res, next) => {
     from: '"ArkSecond" <donotreply@arksecond.com>',
     to: req.body.email,
     subject: "Username Recovery",
-    text: `Your username is: ${result[1].recordsets[0][0].user}`,
+    text: `Your username is: ${result[1].recordsets[0][0].userName}`,
   });
 
   res.status(200);
@@ -282,11 +274,13 @@ const passwordRecovery = async (req, res, next) => {
 
   let result;
   try {
-    const query1 = `SELECT [sq].[question] FROM [User].[User] AS [u] JOIN [User].[UserSecurityQuestion] AS [usq] ON [usq].[userId] = [u].[Id] JOIN [User].[SecurityQuestion] AS [sq] ON [sq].[Id] = [usq].[securityQuestionId] WHERE [u].[user] = ${user}`;
+    const query1 = `SELECT [sq].[question] FROM [User].[User] AS [u] JOIN [User].[UserSecurityQuestion] AS [usq] ON [usq].[userId] = [u].[Id] JOIN [User].[SecurityQuestion] AS [sq] ON [sq].[Id] = [usq].[securityQuestionId] WHERE [u].[userName] = '${user}'`;
     result = await queryDB(query1);
   } catch (err) {
-    logger.error(
-      "Error in password recovery confirmation, failed to search for users for answer"
+    loggerError(
+      err.message,
+      "Error in password recovery confirmation, failed to search for users for answer",
+      "auth"
     );
     return next(new HttpError("Something went wrong. Try again later", 500));
   }
@@ -306,11 +300,13 @@ const passwordRecoveryComfirmation = async (req, res, next) => {
 
   let result;
   try {
-    const query1 = `SELECT [answer] FROM [User].[User] AS [u] JOIN [User].[UserSecurityQuestion] AS [usq] ON [usq].[userId] = [u].[Id] WHERE [user] = ${user}`;
+    const query1 = `SELECT [answer] FROM [User].[User] AS [u] JOIN [User].[UserSecurityQuestion] AS [usq] ON [usq].[userId] = [u].[Id] WHERE [userName] = '${user}'`;
     result = await queryDB(query1);
   } catch (err) {
-    logger.error(
-      "Error in password recovery confirmation, failed to search for users for answer"
+    loggerError(
+      err.message,
+      "Error in password recovery confirmation, failed to search for users for answer",
+      "auth"
     );
     return next(new HttpError("Something went wrong. Try again later", 500));
   }
@@ -322,10 +318,11 @@ const passwordRecoveryComfirmation = async (req, res, next) => {
   try {
     isValid = await bcrypt.compare(answer, result[1].recordsets[0][0].answer);
   } catch (err) {
-    logger.error(
-      "Error in password recovery confirmation, unencrypting answer"
+    loggerError(
+      err.message,
+      "Error in password recovery confirmation, unencrypting answer",
+      "auth"
     );
-    logger.error(err.message);
     return next(
       new HttpError(
         "Something went wrong. Failed to login. Try again later.",
@@ -338,22 +335,21 @@ const passwordRecoveryComfirmation = async (req, res, next) => {
     let result;
     let resultParse;
     try {
-      const query1 = `SELECT * FROM [User].[User] WHERE [user] = ${user}`;
+      const query1 = `SELECT * FROM [User].[User] WHERE [userName] = '${user}'`;
       result = await queryDB(query1);
       resultParse = result[1].recordsets[0][0];
       if (!resultParse) {
         res.status(400).json({ message: "User doesn't exist" });
       }
     } catch (err) {
-      logger.error("Error in login, getting user data");
-      logger.error(err.message);
+      loggerError(err.message, "Error in login, getting user data", "auth");
       return next(new HttpError("Something went wrong. Try again later.", 500));
     }
     let token;
     try {
       token = await jwt.sign(
         {
-          user: resultParse.user,
+          user: resultParse.userName,
           firstName: resultParse.firstName,
           lastName: resultParse.lastName,
           email: resultParse.email,
@@ -362,8 +358,7 @@ const passwordRecoveryComfirmation = async (req, res, next) => {
         { expiresIn: "1h" }
       );
     } catch (err) {
-      logger.error("Error in signup, creating token");
-      logger.error(err.message);
+      loggerError(err.message, "Error in signup, creating token", "auth");
       return next(
         new HttpError(
           "Something went wrong. Failed to log in. Try to log in later.",
@@ -373,7 +368,7 @@ const passwordRecoveryComfirmation = async (req, res, next) => {
     }
     res.status(200).json(
       JSON.stringify({
-        user: resultParse.user,
+        user: resultParse.userName,
         firstName: resultParse.firstName,
         lastName: resultParse.lastName,
         token,
@@ -401,8 +396,11 @@ const updatePassword = async (req, res, next) => {
   try {
     hashedPass = await bcrypt.hash(password, 12);
   } catch (err) {
-    logger.error("Error in updating password, hashing password");
-    logger.error(err.message);
+    loggerError(
+      err.message,
+      "Error in updating password, hashing password",
+      "auth"
+    );
     return next(
       new HttpError(
         "Something went wrong. Failed to create user. Try again later.",
@@ -412,7 +410,7 @@ const updatePassword = async (req, res, next) => {
   }
 
   try {
-    const query = `UPDATE [User].[User] SET [password] = ${hashedPass} WHERE [user] = ${user}`;
+    const query = `UPDATE [User].[User] SET [password] = ${hashedPass} WHERE [userName] = '${user}'`;
     queryDB(query);
     res.status(200);
   } catch (err) {

@@ -1,3 +1,4 @@
+const env = require("dotenv").config({path: "./environment/.env"});
 const express = require("express");
 const bodyParser = require("body-parser");
 const schedule = require("node-schedule");
@@ -16,6 +17,10 @@ const csvArchive = require("./middleware/csvArchive");
 
 ////////////////////////////////////////////////////////////////
 
+if (env.error) {
+  throw result.error;
+}
+
 app.use(bodyParser.json());
 
 app.use((req, res, next) => {
@@ -28,7 +33,7 @@ app.use((req, res, next) => {
   next();
 });
 
-const job = schedule.scheduleJob("*/30 * * * * 1-5", async () => {
+const job = schedule.scheduleJob("0 0 */2 * * 1-5", async () => {
   try {
     await csvDownload();
     await csvProcess();

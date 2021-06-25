@@ -4,53 +4,33 @@ info:
   title: Ark Stock Tracking System
 host: localhost:5000
 basePath: /
-consumes:
-  - application/json
-produces:
-  - application/json
-schemes:
-  - http
-  - https
-securityDefinitions:
-  Basic:
-    type: apiKey
-    name: Authorization
-    in: header
-  Bearer:
-    type: apiKey
-    name: Authorization
-    in: header
 paths:
 
 
   /api/db/funds:
     get:
       summary: Gets the list of tracked funds.
-      security:
-        - Basic: []
-        - Bearer: []
       responses:
         '200':
-          description: Data is retrieved successfully.=
-          schema:
-            type: array
-            items:
-              type: object
-              properties:
-                fundName:
-                  type: string
-                description:
-                  type: string
+          description: Data is retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    fundName:
+                      type: string
+                    description:
+                      type: string
         '500':
           description: Couldn't retrieve data from database.
           
           
   /api/db/funds/holdings/date:
     get:
-      summary: Gets cumulative holdings across specified funds for all tickers by date. (Date in yyyy-mm-dd format)
-      security:
-        - Basic: []
-        - Bearer: []
+      summary: Gets cumulative holdings across specified funds for all tickers by date
       parameters:
         - name: queryParams
           in: body
@@ -102,9 +82,6 @@ paths:
   /api/db/funds/holdings/ticker:
     get:
       summary: Gets each specified fund's holdings for a ticker over a period of time
-      security:
-        - Basic: []
-        - Bearer: []
       parameters:
         - name: queryParams
           in: body
@@ -162,9 +139,6 @@ paths:
   /api/db/funds/change:
     get:
       summary: Gets difference in shares and market value between every day cumulative of all the funds tracked over a period of time
-      security:
-        - Basic: []
-        - Bearer: []
       parameters:
         - name: queryParams
           in: body
@@ -217,9 +191,6 @@ paths:
   /api/fin/history:
     get:
       summary: Returns an array of quotes starting from and including the start date and ending on but not including the last date interested for an interval between quotes for a company.
-      security:
-        - Basic: []
-        - Bearer: []
       parameters:
         - name: queryParams
           in: body
@@ -275,9 +246,6 @@ paths:
   /api/fin/quote:
     get:
       summary: Returns an array with the latest quote for the company represented by the ticker.
-      security:
-        - Basic: []
-        - Bearer: []
       parameters:
         - name: queryParams
           in: body
@@ -529,9 +497,6 @@ paths:
   /user/recovery/updatePassword:
     post:
       summary: Updates associated user's password
-      security:
-        - Basic: []
-        - Bearer: []
       parameters:
         - in: body
           name: password
@@ -555,3 +520,13 @@ paths:
           description: Parameters are of an invalid format.
         '500':
           description: Couldn't retrieve data from database.
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string

@@ -14,12 +14,12 @@ module.exports = async (req, res, next) => {
   }
 
   try {
-    const auth = req.headers.authorization.split(" ");
-    if (!auth[1]) {
+    const authData = req.headers.authorization.split(" ");
+    if (!authData[1]) {
       throw new Error("Authentication failed");
     }
-    if (auth[0] === "Basic") {
-      const base64Cred = auth[1];
+    if (authData[0] === "Basic") {
+      const base64Cred = authData[1];
       const credentials = Buffer.from(base64Cred, "base64").toString(
         "ascii"
       );
@@ -37,8 +37,8 @@ module.exports = async (req, res, next) => {
       };
 
       next();
-    } else if (auth[0] === "Bearer") {
-      const decodedToken = jwt.verify(auth[1], process.env.EN_KEY);
+    } else if (authData[0] === "Bearer") {
+      const decodedToken = jwt.verify(authData[1], process.env.EN_KEY);
       req.userData = {
         user: decodedToken.user,
         firstname: decodedToken.firstname,

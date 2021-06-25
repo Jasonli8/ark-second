@@ -7,9 +7,9 @@ const HttpError = require("../models/http-error");
 const checkFund = async (fundType) => {
   try {
     const query1 = "select [f].[fundName] from [Shares].[Fund] as [f]";
-    const result = queryDB(query1);
+    const result = await queryDB(query1);
     let fundIsValid = false;
-    result[0].recordset.forEach(function (fund) {
+    result[1].recordset.forEach(function (fund) {
       if (fund.fundName == fundType) {
         fundIsValid = true;
       }

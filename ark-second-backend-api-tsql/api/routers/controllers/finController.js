@@ -1,14 +1,22 @@
+const { validationResult } = require("express-validator");
 const yahooFinance = require("yahoo-finance");
 
 ////////////////////////////////////////////////////////////////
 
 const HttpError = require("../../../components/models/http-error");
 const { loggerError } = require("../../../components/helpers/logger");
+const checkDate = require("../../../components/helpers/checkDate");
+const checkTicker = require("../../../components/helpers/checkTicker");
 
 ////////////////////////////////////////////////////////////////
 
 // getHistory(string ticker, string period, date fromDate, date toDate) gets all the quotes for that ticker at certain periods between the fromDate (included) to the toDate (excluded)
 const getHistory = async (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return next(new HttpError("Invalid input", 422));
+  }
+
   const { ticker, period, fromDate, toDate } = req.body;
 
   const validPeriods = ["d", "w", "m", "v"];
@@ -27,7 +35,7 @@ const getHistory = async (req, res, next) => {
     return next(new HttpError("Something went wrong", 500));
   }
 
-  try {
+  try { 
     yahooFinance.historical(
       {
         symbol: `${ticker}`,
@@ -60,7 +68,12 @@ const getHistory = async (req, res, next) => {
 };
 
 // getQuote(string ticker) gets the current quote for that ticker
-const getQuote = (req, res, next) => {
+const getQuote = async (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return next(new HttpError("Invalid input", 422));
+  }
+
   const { ticker } = req.body;
 
   try {
