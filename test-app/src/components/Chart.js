@@ -13,21 +13,23 @@ let ChartJS = (props) => {
   const { type, width, ratio } = props;
   const data = MadeData;
   const xAccessor = (d) => {
-    return d.date;
+    console.log(d.date);
+    return new Date(d.date);
   };
+  console.log(data);
   return (
     <div className="ChartJS">
       <ChartCanvas
-        height={400}
+        height={800}
         ratio={ratio}
         width={width}
         margin={{ left: 50, right: 50, top: 10, bottom: 30 }}
         type={type}
         data={data}
-        seriesName="MSFT"
+        seriesName="TSLA"
         xAccessor={xAccessor}
         xScale={scaleTime()}
-        xExtents={[new Date(2020, 0, 30), new Date(2020, 1, 16)]}
+        xExtents={[new Date(2020, 0, 30), new Date(2020, 1, 2)]}
       >
         <Chart id={1} yExtents={(d) => [d.high, d.low]}>
           <XAxis axisAt="bottom" orient="bottom" ticks={6} />

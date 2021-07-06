@@ -8,7 +8,6 @@ export const useHttpClient = () => {
 
   const sendRequest = useCallback(
     async (url, method = "GET", body = null, headers = {}) => {
-      console.log(headers);
       setIsLoading(true);
       const httpAbortCtrl = new AbortController();
       activeHttpRequests.current.push(httpAbortCtrl);
@@ -18,7 +17,6 @@ export const useHttpClient = () => {
         body,
         signal: httpAbortCtrl.signal,
       }
-      console.log(options);
       try {
         const response = await fetch(url, options);
         const responseData = await response.json();

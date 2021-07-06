@@ -102,7 +102,8 @@ function App() {
 
   // allowed and disallowed paths
   let routes;
-  if (!token) { // !token
+  if (!token) {
+    // !token
     routes = (
       <Switch>
         <Route path="/login" exact>
@@ -149,7 +150,6 @@ function App() {
       </Router>
     </AuthContext.Provider>
   );
-
 }
 
 ///////////////////////////////////////////////////////////////////////////////////

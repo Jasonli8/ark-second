@@ -12,7 +12,8 @@ import MadeData from "./testData";
 
 ///////////////////////////////////////////////////////////////////////////////////
 
-const ticker = "TSLA"; //for testing
+const ticker = 'TSLA'; //for testing
+const period = 'd'
 
 function Test() {
   const auth = useContext(AuthContext);
@@ -21,37 +22,31 @@ function Test() {
 
   const getData = async () => {
     let formattedData;
-    const today = new Date();
-    const date = today.toISOString();
-    console.log(auth.token);
+    const toDate = (new Date()).toISOString().substring(0, 10);
+    const fromDate = (new Date(2010, 1, 1)).toISOString().substring(0, 10);
     try {
-      const responseData = await sendRequest(
-        "http://localhost:5000/api/fin/history",
+      let responseData = await sendRequest(
+        `http://localhost:5000/api/fin/history?ticker=${ticker}&period=${period}&fromDate=${fromDate}&toDate=${toDate}`,
         "GET",
-        JSON.stringify({
-          ticker: ticker,
-          period: "d",
-          fromDate: "2000-01-01",
-          toDate: `date`,
-        }),
+        null,
         {
           "Authorization": "Bearer " + auth.token,
-          "Content-Type": "application/json",
         }
       );
-      console.log(responseData[1].recordsets);
-      formattedData = responseData[1].recordsets;
+      formattedData = responseData.reverse()
+      console.log(formattedData)
+      const charts = [];
+      charts.push(<CandleStick key={1} data={formattedData} />);
+      setChartsToDisplay(charts);
     } catch (err) {
       console.log(err);
     }
-    const charts = [];
-    charts.push(<CandleStick key={1} data={formattedData} />);
-    setChartsToDisplay(charts);
+
   };
 
   useEffect(() => {
     getData();
-  }, [getData]);
+  }, [sendRequest]);
 
   return (
     <>

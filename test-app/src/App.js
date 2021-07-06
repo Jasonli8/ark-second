@@ -47,14 +47,13 @@ const App = () => {
 
   useEffect(async () => {
     try {
-      await authSubmitHandler();
-      console.log("auth passed");
+      getData()
     } catch (err) {
       console.log(err.message);
     }
   }, []);
 
-  return <p>{!isLoading && response}</p>;
+  return <>{chartsToDisplay}</>;
 };
 
 export default App;

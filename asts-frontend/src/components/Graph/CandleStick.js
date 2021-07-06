@@ -11,7 +11,7 @@ import { timeIntervalBarWidth } from "react-stockcharts/lib/utils";
 let ChartJS = (props) => {
   const { type, width, ratio } = props;
   const xAccessor = (d) => {
-    return d.date;
+    return new Date(d.date);
   };
   return (
     <div className="ChartJS">
@@ -22,8 +22,8 @@ let ChartJS = (props) => {
         margin={{ left: 30, right: 30, top: 30, bottom: 30 }}
         type={type}
         data={props.data}
-        seriesName="MSFT"
-        xAccessor={xAccessor}
+        seriesName="TSLA"
+        xAccessor={xAccessor} // xAccessor
         xScale={scaleTime()}
         xExtents={[new Date(2020, 0, 30), new Date(2020, 1, 16)]}
       >
