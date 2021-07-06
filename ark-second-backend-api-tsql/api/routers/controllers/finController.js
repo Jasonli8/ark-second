@@ -17,7 +17,7 @@ const getHistory = async (req, res, next) => {
     return next(new HttpError("Invalid input", 422));
   }
 
-  const { ticker, period, fromDate, toDate } = req.body;
+  const { ticker, period, fromDate, toDate } = req.query;
 
   const validPeriods = ["d", "w", "m", "v"];
   const isValidPeriod = validPeriods.includes(period);
@@ -32,7 +32,7 @@ const getHistory = async (req, res, next) => {
     formattedToDate = await checkDate(toDate);
     await checkTicker;
   } catch (err) {
-    return next(new HttpError("Something went wrong", 500));
+    return next(new HttpError("Dates are invalid", 400));
   }
 
   try { 
@@ -74,7 +74,7 @@ const getQuote = async (req, res, next) => {
     return next(new HttpError("Invalid input", 422));
   }
 
-  const { ticker } = req.body;
+  const { ticker } = req.query;
 
   try {
     await checkTicker;

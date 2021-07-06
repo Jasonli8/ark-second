@@ -13,9 +13,7 @@ schemes:
   - https
 securityDefinitions:
   Basic:
-    type: apiKey
-    name: Authorization
-    in: header
+    type: basic
   Bearer:
     type: apiKey
     name: Authorization
@@ -52,21 +50,17 @@ paths:
         - Basic: []
         - Bearer: []
       parameters:
-        - name: queryParams
-          in: body
+        - name: fundType
+          in: query
           required: true
-          schema:
-            type: object
-            required: 
-             - fundType
-             - date
-            properties:
-              fundType:
-                type: array
-                items: 
-                  type: string
-              date:
-                type: string
+          type: array
+          items: 
+            type: string
+        - name: date
+          in: query
+          required: true
+          type: string
+          format: date
       responses:
         '200':
           description: Data is retrieved successfully.
@@ -106,27 +100,26 @@ paths:
         - Basic: []
         - Bearer: []
       parameters:
-        - name: queryParams
-          in: body
+        - name: fundType
+          in: query
           required: true
-          schema:
-            type: object
-            required: 
-             - fundType
-             - ticker
-             - fromDate
-             - toDate
-            properties:
-              fundType:
-                type: array
-                items: 
-                  type: string
-              ticker:
-                type: string
-              fromDate:
-                type: string
-              toDate:
-                type: string
+          type: array
+          items: 
+            type: string
+        - name: ticker
+          in: query
+          required: true
+          type: string
+        - name: fromDate
+          in: query
+          required: true
+          type: string
+          format: date
+        - name: toDate
+          in: query
+          required: true
+          type: string
+          format: date
       responses:
         '200':
           description: Data is retrieved successfully.
@@ -166,22 +159,20 @@ paths:
         - Basic: []
         - Bearer: []
       parameters:
-        - name: queryParams
-          in: body
+        - name: ticker
+          in: query
           required: true
-          schema:
-            type: object
-            required: 
-             - ticker
-             - fromDate
-             - toDate
-            properties:
-              ticker:
-                type: string
-              fromDate:
-                type: string
-              toDate:
-                type: string
+          type: string
+        - name: fromDate
+          in: query
+          required: true
+          type: string
+          format: date
+        - name: toDate
+          in: query
+          required: true
+          type: string
+          format: date
       responses:
         '200':
           description: Data is retrieved successfully.
@@ -221,25 +212,24 @@ paths:
         - Basic: []
         - Bearer: []
       parameters:
-        - name: queryParams
-          in: body
+        - name: ticker
+          in: query
           required: true
-          schema:
-            type: object
-            required: 
-             - ticker
-             - period
-             - fromDate
-             - toDate
-            properties:
-              ticker:
-                type: string
-              period:
-                type: string
-              fromDate:
-                type: string
-              toDate:
-                type: string
+          type: string
+        - name: period
+          in: query
+          required: true
+          type: string
+        - name: fromDate
+          in: query
+          required: true
+          type: string
+          format: date
+        - name: toDate
+          in: query
+          required: true
+          type: string
+          format: date
       responses:
         '200':
           description: Data is retrieved successfully.
@@ -279,16 +269,10 @@ paths:
         - Basic: []
         - Bearer: []
       parameters:
-        - name: queryParams
-          in: body
+        - name: ticker
+          in: query
           required: true
-          schema:
-            type: object
-            required: 
-             - ticker
-            properties:
-              ticker:
-                type: string
+          type: string
       responses:
         '200':
           description: Data is retrieved successfully.

@@ -7,16 +7,17 @@ const { validationResult } = require("express-validator");
 
 const queryDB = require("../../../components/helpers/queryDB");
 const HttpError = require("../../../components/models/http-error");
-const { loggerError } = require("../../../components/helpers/logger");
+const { loggerError, loggerInfo } = require("../../../components/helpers/logger");
 
 ////////////////////////////////////////////////////////////////
 
 // getSecurityQuestions() retrieves all security questions from DB
 const getSecurityQuestions = async (req, res, next) => {
+  console.log(req.headers);
   try {
     const query = "SELECT [question] FROM [User].[SecurityQuestion]";
-    const result = queryDB(query);
-    res.status(200).json(result[1].recordsets);
+    const result = await queryDB(query);
+    res.status(200).json(result[1].recordsets[0]);
   } catch (err) {
     loggerError(err.message, "Failed to get security questions", "auth");
     return next(
@@ -35,13 +36,14 @@ const signup = async (req, res, next) => {
     return next(new HttpError("Invalid input", 422));
   }
 
+  loggerInfo("Signing up a user", "auth");
+
   const { user, firstName, lastName, email, password, question, answer } =
     req.body;
-  let existingUser;
   try {
     const query1 = `SELECT * FROM [User].[User] WHERE [userName] = '${user}'`;
     const result = await queryDB(query1);
-    if (result[0]) {
+    if (result[1].recordset[0]) {
       res
         .status(400)
         .json({ message: "A user with the chosen username already exists" });
@@ -59,9 +61,10 @@ const signup = async (req, res, next) => {
       )
     );
   }
+
   let questionId;
   try {
-    const query2 = `SELECT * FROM [User].[SecurityQuestion] WHERE [question] = ${question}`;
+    const query2 = `SELECT * FROM [User].[SecurityQuestion] WHERE [question] = '${question}'`;
     let result = await queryDB(query2);
     if (!result[1].recordsets[0][0]) {
       const query3 = `INSERT INTO [User].[SecurityQuestion] ([question]) VALUES(${question})`;
@@ -96,17 +99,14 @@ const signup = async (req, res, next) => {
       )
     );
   }
-  if (!phone) {
-    phone = null;
-  }
 
   try {
     const query4 =
-      `BEGIN TRAN T1` +
+      `BEGIN TRAN T1 ` +
       `INSERT INTO [User].[User] ([userName],[firstName],[lastName],[email],[password]) ` +
-      `VALUES(${user},${firstName},${lastName},${email},${hashedPass}) ` +
-      `INSERT INTO [User].[UserSecurityQuestion] ([userId],[securityQuestion],[answer]) ` +
-      `SELECT [Id], ${questionId}, ${hashedAnswer} FROM [User].[User] WHERE [userName] = ${user} ` +
+      `VALUES('${user}','${firstName}','${lastName}','${email}','${hashedPass}') ` +
+      `INSERT INTO [User].[UserSecurityQuestion] ([userId],[securityQuestionId],[answer]) ` +
+      `SELECT [Id], ${questionId}, '${hashedAnswer}' FROM [User].[User] WHERE [userName] = '${user}' ` +
       `COMMIT TRAN T1`;
     await queryDB(query4);
   } catch (err) {
@@ -114,6 +114,28 @@ const signup = async (req, res, next) => {
     return next(
       new HttpError(
         "Something went wrong. Failed to create user. Try again later.",
+        500
+      )
+    );
+  }
+  try {
+    const query5 = `SELECT * FROM [User].[User] WHERE [userName] = '${user}'`
+    const result = await queryDB(query5);
+    console.log(result);
+    if(!result[1].recordset[0]) {
+      loggerError(err.message, "Error in signup, creating user", "auth");
+      return next(
+        new HttpError(
+          "Something went wrong. Failed to create user. Try again later.",
+          500
+        )
+      );
+    }
+  } catch (err) {
+    loggerError(err.message, "Error in signup, checking user creation user", "auth");
+    return next(
+      new HttpError(
+        "Something went wrong. Try again later.",
         500
       )
     );
@@ -143,10 +165,12 @@ const signup = async (req, res, next) => {
 const login = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
+    loggerError(errors, "Error in login, invalid input", "auth");
     return next(new HttpError("Invalid input", 422));
   }
 
   const { user, password } = req.body;
+  loggerInfo("Logging in a user with username: " + user, "auth");
   let result;
   let resultParse;
   try {
@@ -203,6 +227,7 @@ const login = async (req, res, next) => {
         )
       );
     }
+    loggerInfo(user + " is logged in", "auth");
     res.status(200).json(
       JSON.stringify({
         user: resultParse.userName,

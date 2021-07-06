@@ -1,3 +1,17 @@
 TODO -
 deploy api info page
 get by company id?
+
+Components -
+graphs (bar and line, react-stockcharts)
+accordian of stocks and holdings
+stat body
+
+navbar
+footer
+
+dotenv
+react-stockcharts
+react-bootstrap bootstrap@4.6.0
+react-router
+react-router-dom

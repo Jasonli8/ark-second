@@ -12,7 +12,8 @@ module.exports = async (req, res, next) => {
   if (req.method === "OPTIONS") {
     return next();
   }
-
+  console.log(req.headers); // consolelog
+  console.log(req.body); // consolelog
   try {
     const authData = req.headers.authorization.split(" ");
     if (!authData[1]) {

@@ -36,7 +36,7 @@ const getFundsHoldingByDate = async (req, res, next) => {
     return next(new HttpError("Invalid input", 422));
   }
 
-  const { fundType, date } = req.body;
+  const { fundType, date } = req.query;
 
   let formattedDate;
   try {
@@ -83,7 +83,7 @@ const getFundHoldingByTicker = async (req, res, next) => {
     return next(new HttpError("Invalid input", 422));
   }
 
-  const { fundType, ticker, fromDate, toDate } = req.body;
+  const { fundType, ticker, fromDate, toDate } = req.query;
 
   let formattedFromDate;
   let formattedToDate;
@@ -134,7 +134,7 @@ const getChangeByTicker = async (req, res, next) => {
     return next(new HttpError("Invalid input", 422));
   }
 
-  const { ticker, fromDate, toDate } = req.body;
+  const { ticker, fromDate, toDate } = req.query;
 
   let formattedFromDate;
   let formattedToDate;
