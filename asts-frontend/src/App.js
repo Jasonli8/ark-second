@@ -9,8 +9,8 @@ import {
 ///////////////////////////////////////////////////////////////////////////////////
 
 import { AuthContext } from "./contexts/auth-context";
-import Login from "./pages/login/login";
-import Signup from "./pages/signup/signup";
+import Login from "./pages/login/Login";
+import Signup from "./pages/signup/Signup";
 import Test from "./pages/test/test";
 import ASTSNavbar from "./components/Navbar/ASTSNavbar";
 

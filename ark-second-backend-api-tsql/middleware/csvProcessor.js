@@ -76,9 +76,9 @@ const csvProcess = async () => {
             `ELSE INSERT INTO [Shares].[Company]([companyName], [ticker], [cusip]) VALUES ('${name}','${data[3]}','${data[4]}')`;
           const query2 =
             `IF EXISTS (SELECT * FROM [Shares].[Company] AS [c] JOIN [Shares].[Holding] AS [h] ON [c].[Id] = [h].[companyId] JOIN [Shares].[Fund] AS [f] ON [f].[Id] = [h].[fundId] WHERE [companyName] = '${name}' AND [fundName] = '${fund.fundName}' AND [date] = ${date}) ` +
-            `WITH All_Holdings ([companyName], [fundName], [date], [shares], [marketValue], [weight]) AS (SELECT [companyName], '${fund.fundName}', [date], [shares], [marketValue], [weight] FROM [Shares].[Company] AS [c] JOIN [Shares].[Holding] AS [h] ON [c].[Id] = [h].[companyId] JOIN [Shares].[Fund] AS [f] ON [f].[Id] = [h].[fundId]) ` +
+            `WITH All_Holdings ([companyName], [fundName], [date], [shares], [marketValue], [weight]) AS (SELECT [companyName], [fundName], [date], [shares], [marketValue], [weight] FROM [Shares].[Company] AS [c] JOIN [Shares].[Holding] AS [h] ON [c].[Id] = [h].[companyId] JOIN [Shares].[Fund] AS [f] ON [f].[Id] = [h].[fundId]) ` +
             `UPDATE All_Holdings SET [shares] = ${data[5]}, [marketValue] = ${data[6]}, [weight] = ${data[7]} WHERE [companyName] = '${name}' AND [fundName] = '${fund.fundName}' AND [date] = ${date} ` +
-            `ELSE WITH All_Holdings ([companyName], [fundName], [date], [shares], [marketValue], [weight]) AS (SELECT [companyName], '${fund.fundName}', [date], [shares], [marketValue], [weight] FROM [Shares].[Company] AS [c] JOIN [Shares].[Holding] AS [h] ON [c].[Id] = [h].[companyId] JOIN [Shares].[Fund] AS [f] ON [f].[Id] = [h].[fundId]) ` +
+            `ELSE WITH All_Holdings ([companyName], [fundName], [date], [shares], [marketValue], [weight]) AS (SELECT [companyName], [fundName], [date], [shares], [marketValue], [weight] FROM [Shares].[Company] AS [c] JOIN [Shares].[Holding] AS [h] ON [c].[Id] = [h].[companyId] JOIN [Shares].[Fund] AS [f] ON [f].[Id] = [h].[fundId]) ` +
             `INSERT INTO [Shares].[Holding]([companyId], [fundId], [date], [shares], [marketvalue], [weight]) SELECT [c].[Id], ${fund.Id}, ${date}, ${data[5]}, ${data[6]}, ${data[7]} FROM [Shares].[Company] AS [c] WHERE [c].[companyName] = '${name}'`;
           try {
             await queryDB(query1);

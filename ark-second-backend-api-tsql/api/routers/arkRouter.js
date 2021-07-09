@@ -18,7 +18,7 @@ router.use(authParse);
 // gets cumulative (specified) holdings per ticker by date
 router.get(
   "/db/funds/holdings/date",
-  query("fundType").isArray({ min: 1 }),
+  query("fundType").isString(),
   query("date").isDate(),
   dbController.getFundsHoldingByDate
 );
@@ -26,7 +26,7 @@ router.get(
 // gets each fund's holdings by ticker over a period of time
 router.get(
   "/db/funds/holdings/ticker",
-  query("fundType").isArray({ min: 1 }),
+  query("fundType").isString({ min: 1 }),
   query("ticker").isString(),
   query("fromDate").isDate(),
   query("toDate").isDate(),

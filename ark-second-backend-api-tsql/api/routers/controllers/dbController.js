@@ -10,10 +10,17 @@ const checkTicker = require("../../../components/helpers/checkTicker");
 
 ////////////////////////////////////////////////////////////////
 
+const toArray = (str) => {
+  const arr = str.split(",");
+  return arr;
+}
+
+////////////////////////////////////////////////////////////////
+
 // getFunds() returns funds
 const getFunds = async (req, res, next) => {
   const query =
-    "select [f].[fundName], [f].[description] from [Shares].[Fund] as [f]";
+    "select [f].[fundName], [f].[description] from [Shares].[Fund] as [f] order by [f].[fundName] asc";
   queryDB(query)
     .then((result) => {
       if (result[0] === 200) {
@@ -37,10 +44,11 @@ const getFundsHoldingByDate = async (req, res, next) => {
   }
 
   const { fundType, date } = req.query;
+  const funds = toArray(fundType);
 
   let formattedDate;
   try {
-    fundType.forEach(async function (fund) {
+    funds.forEach(async function (fund) {
       try {
         await checkFund(fund);
       } catch (err) {
@@ -51,16 +59,16 @@ const getFundsHoldingByDate = async (req, res, next) => {
   } catch (err) {
     return next(new HttpError("Something went wrong", 500));
   }
-  let formattedFund = `([fundName] = '${fundType[0]}'`;
-  const fundTypeLen = fundType.length;
-  for (var i = 1; i < fundTypeLen; i++) {
-    formattedFund += ` OR [fundName] = '${fundType[i]}'`;
+  let formattedFund = `([fundName] = '${funds[0]}'`;
+  const fundLen = funds.length;
+  for (var i = 1; i < fundLen; i++) {
+    formattedFund += ` OR [fundName] = '${funds[i]}'`;
   }
   formattedFund += ')'
 
   const query2 =
     `WITH All_Holding([fundName],[description],[companyId],[companyName],[ticker],[cusip],[date],[shares],[marketValue],[weight]) AS (SELECT [fundName],[description],[companyId],[companyName],[ticker],[cusip],[date],[shares],[marketValue],[weight] FROM [Shares].[Company] AS [c] JOIN [Shares].[Holding] AS [h] ON [h].[companyId] = [c].[Id] JOIN [Shares].[Fund] AS [f] ON [f].[Id] = [h].[fundId]) ` +
-    `SELECT [fundName], [description],[companyId],[companyName],[ticker],[cusip],[date],SUM([shares]) AS [shares],SUM([marketValue]) AS [marketValue] FROM All_Holding WHERE [date] = '${formattedDate}' AND ${formattedFund} GROUP BY [fundName],[description],[companyId],[companyName],[ticker],[cusip],[date]`;
+    `SELECT [fundName], [description],[companyId],[companyName],[ticker],[cusip],[date],SUM([shares]) AS [shares],SUM([marketValue]) AS [marketValue] FROM All_Holding WHERE [date] = '${formattedDate}' AND ${formattedFund} GROUP BY [fundName],[description],[companyId],[companyName],[ticker],[cusip],[date] ORDER BY [fundName], [companyName] ASC`;
   queryDB(query2)
     .then((result) => {
       if (result[0] === 200) {
@@ -84,11 +92,11 @@ const getFundHoldingByTicker = async (req, res, next) => {
   }
 
   const { fundType, ticker, fromDate, toDate } = req.query;
-
+  const funds = toArray(fundType);
   let formattedFromDate;
   let formattedToDate;
   try {
-    fundType.forEach(async function (fund) {
+    funds.forEach(async function (fund) {
       try {
         await checkFund(fund);
       } catch {
@@ -102,16 +110,16 @@ const getFundHoldingByTicker = async (req, res, next) => {
     return next(new HttpError("Something went wrong", 500));
   }
 
-  let formattedFund = `([fundName] = '${fundType[0]}'`;
-  const fundTypeLen = fundType.length;
-  for (var i = 1; i < fundTypeLen; i++) {
-    formattedFund += ` OR [fundName] = '${fundType[i]}'`;
+  let formattedFund = `([fundName] = '${funds[0]}'`;
+  const fundLen = funds.length;
+  for (var i = 1; i < fundLen; i++) {
+    formattedFund += ` OR [fundName] = '${funds[i]}'`;
   }
   formattedFund += ')'
 
   const query =
     `WITH All_Holding([fundName],[description],[companyId],[companyName],[ticker],[cusip],[date],[shares],[marketValue],[weight]) AS (SELECT [fundName],[description],[companyId],[companyName],[ticker],[cusip],[date],[shares],[marketValue],[weight] FROM [Shares].[Company] AS [c] JOIN [Shares].[Holding] AS [h] ON [h].[companyId] = [c].[Id] JOIN [Shares].[Fund] AS [f] ON [f].[Id] = [h].[fundId]) ` +
-    `SELECT [fundName], [description],[companyId],[companyName],[ticker],[cusip],[date],[shares],[marketValue] FROM All_Holding WHERE ${formattedFund} AND [ticker] = '${ticker}' AND ([date] BETWEEN '${formattedFromDate}' AND '${formattedToDate}')`;
+    `SELECT [fundName], [description],[companyId],[companyName],[ticker],[cusip],[date],[shares],[marketValue] FROM All_Holding WHERE ${formattedFund} AND [ticker] = '${ticker}' AND ([date] BETWEEN '${formattedFromDate}' AND '${formattedToDate}') ORDER BY [date], [fundName] ASC`;
   queryDB(query)
     .then((result) => {
       if (result[0] === 200) {
@@ -148,7 +156,7 @@ const getChangeByTicker = async (req, res, next) => {
 
   const query =
     `WITH All_Holding([companyId],[companyName],[ticker],[cusip],[date],[shares],[marketValue]) AS (SELECT [companyId],[companyName],[ticker],[cusip],[date],SUM([shares]) AS [shares],SUM([marketValue]) AS [marketValue] FROM [Shares].[Company] AS [c] JOIN [Shares].[Holding] AS [h] ON [h].[companyId] = [c].[Id] WHERE [date] BETWEEN '${formattedFromDate}' AND '${formattedToDate}' AND [ticker] = '${ticker}' GROUP BY [companyId],[companyName],[ticker],[cusip],[date]) ` +
-    `SELECT [companyId],[companyName],[ticker],[cusip],[date], ([shares] - LAG([shares], 1) OVER(ORDER BY [date])) AS [sharesDifference], ([marketValue] - LAG([marketValue], 1) OVER(ORDER BY [date])) AS [marketValueDifference] FROM All_Holding`;
+    `SELECT [companyId],[companyName],[ticker],[cusip],[date], ([shares] - LAG([shares], 1) OVER(ORDER BY [date])) AS [sharesDifference], ([marketValue] - LAG([marketValue], 1) OVER(ORDER BY [date])) AS [marketValueDifference] FROM All_Holding ORDER BY [date], [fundName] ASC`;
   queryDB(query)
     .then((result) => {
       if (result[0] === 200) {

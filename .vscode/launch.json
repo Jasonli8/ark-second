@@ -11,7 +11,7 @@
             "skipFiles": [
                 "<node_internals>/**"
             ],
-            "program": "${workspaceFolder}\\ark-second-backend-api-tsql\\test\\test.js"
+            "program": "${workspaceFolder}\\test-app\\src\\Test.js"
         }
     ]
 }
