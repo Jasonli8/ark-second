@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect, useRef } from "react";
 import {
   BrowserRouter as Router,
   Route,
@@ -25,7 +25,9 @@ let logoutTimer;
 ///////////////////////////////////////////////////////////////////////////////////
 
 function App() {
-  const [token, setToken] = useState(false); // set to false later
+  let validated = useRef(false);
+  const [isLoadingUser, setIsLoadingUser] = useState(true);
+  const [token, setToken] = useState(false);
   const [tokenExpirationDate, setTokenExpirationDate] = useState();
   const [userName, setUserName] = useState(null);
   const [firstName, setFirstName] = useState(null);
@@ -53,6 +55,8 @@ function App() {
       setUserName(userName);
       setFirstName(firstName);
       setLastName(lastName);
+      validated.current = token ? true : false;
+      console.log(validated);
     },
     []
   );
@@ -64,13 +68,15 @@ function App() {
     setLastName(null);
     localStorage.removeItem("userData");
     setToken(false);
+    validated.current = false;
   }, []);
 
   ///////////////////////////////////////////////////////////////////////////////////
 
-  // keep signed in while session is valid and not logged out
-  useEffect(() => {
+  const loadUserData = () => {
+    console.log("loading user data");
     const storedData = JSON.parse(localStorage.getItem("userData"));
+
     if (
       storedData &&
       storedData.token &&
@@ -84,6 +90,12 @@ function App() {
         new Date(storedData.expiration)
       );
     }
+  };
+
+  // keep signed in while session is valid and not logged out
+  useEffect(() => {
+    loadUserData();
+    setIsLoadingUser(false);
   }, [login]);
 
   // auto log out once token expires
@@ -101,34 +113,7 @@ function App() {
   ///////////////////////////////////////////////////////////////////////////////////
 
   // allowed and disallowed paths
-  let routes;
-  if (!token) {
-    // !token
-    routes = (
-      <Switch>
-        <Route path="/login" exact>
-          <Login />
-        </Route>
-        <Route path="/signup" exact>
-          <Signup />
-        </Route>
-        <Redirect to="/login" />
-      </Switch>
-    );
-  } else {
-    routes = (
-      <>
-        <ASTSNavbar />
-        <Switch>
-          <Route path="/" exact>
-            <Test />
-          </Route>
-          <Redirect to="/" />
-        </Switch>
-        <button onClick={logout}>Logout</button>
-      </>
-    );
-  }
+  console.log(validated);
 
   return (
     <AuthContext.Provider
@@ -143,10 +128,42 @@ function App() {
       }}
     >
       <Router>
-        <main>{routes}</main>
-        <footer>
-          This is placeholder text for what goes inside the footer
-        </footer>
+        {!isLoadingUser && (
+          <>
+            {token ? (
+              <>
+                <ASTSNavbar />
+                <Switch>
+                  <Route path="/" exact>
+                    "home"
+                  </Route>
+                  <Route path="/history/:ticker" exact>
+                    <Test />
+                  </Route>
+                  <Route>
+                    <Redirect to="/" />
+                  </Route>
+                </Switch>
+                <button onClick={logout}>Logout</button>
+                <footer>
+                  This is placeholder text for what goes inside the footer
+                </footer>
+              </>
+            ) : (
+              <Switch>
+                <Route path="/login" exact>
+                  {validated.current ? <Redirect to="/" /> : <Login />}
+                </Route>
+                <Route path="/signup" exact>
+                  {validated.current ? <Redirect to="/" /> : <Signup />}
+                </Route>
+                <Route>
+                  <Redirect to="/login" />
+                </Route>
+              </Switch>
+            )}
+          </>
+        )}
       </Router>
     </AuthContext.Provider>
   );

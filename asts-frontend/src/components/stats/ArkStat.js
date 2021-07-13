@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
+import { Spinner } from "react-bootstrap"
 
 ///////////////////////////////////////////////////////////////////////////////////
 
@@ -9,12 +10,12 @@ import { useHttpClient } from "../../helpers/hooks/http-hook";
 
 ///////////////////////////////////////////////////////////////////////////////////
 
-const ticker = "TSLA"; //for testing
 const fundType = "ARKK,ARKQ,ARKW";
 const funds = ["ARKK", "ARKQ", "ARKW"];
 const period = "d";
 
-function Test() {
+function Test(props) {
+  const ticker = props.ticker;
   const auth = useContext(AuthContext);
   const { isLoading, error, sendRequest, clearError } = useHttpClient();
   const [chartsToDisplay, setChartsToDisplay] = useState([]);
@@ -139,7 +140,7 @@ function Test() {
 
   return (
     <>
-      <ContentContainer>{!isLoading && chartsToDisplay}</ContentContainer>
+      <>{!isLoading ? chartsToDisplay : <Spinner animation="grow" variant="light" size='lg' />}</>
     </>
   );
 }

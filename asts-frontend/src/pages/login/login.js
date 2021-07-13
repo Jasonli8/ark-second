@@ -48,7 +48,7 @@ function Login() {
       {isLoading ? (
         <Spinner animation="grow" />
       ) : (
-        <ContentContainer addClass="mt-5">
+        <ContentContainer addClass="mt-5 p-3">
           <Form onSubmit={authSubmitHandler}>
             <h1>Login</h1>
             <Form.Group controlId="userName">
