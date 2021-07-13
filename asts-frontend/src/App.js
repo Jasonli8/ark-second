@@ -152,10 +152,10 @@ function App() {
             ) : (
               <Switch>
                 <Route path="/login" exact>
-                  {validated.current ? <Redirect to="/" /> : <Login />}
+                  <Login />
                 </Route>
                 <Route path="/signup" exact>
-                  {validated.current ? <Redirect to="/" /> : <Signup />}
+                  <Signup />
                 </Route>
                 <Route>
                   <Redirect to="/login" />

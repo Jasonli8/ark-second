@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { Spinner } from "react-bootstrap"
+import { Spinner, Dropdown } from "react-bootstrap";
 
 ///////////////////////////////////////////////////////////////////////////////////
 
@@ -10,13 +10,14 @@ import { useHttpClient } from "../../helpers/hooks/http-hook";
 
 ///////////////////////////////////////////////////////////////////////////////////
 
-const period = "m";
-
 function Ticker(props) {
   const ticker = props.ticker;
+  const [period, setPeriod] = useState("d");
   const auth = useContext(AuthContext);
   const { isLoading, error, sendRequest, clearError } = useHttpClient();
   const [chartsToDisplay, setChartsToDisplay] = useState([]);
+
+  ///////////////////////////////////////////////////////////////////////////////////
 
   const getData = async () => {
     let formattedData;
@@ -31,11 +32,13 @@ function Ticker(props) {
           Authorization: "Bearer " + auth.token,
         }
       );
+      console.log(responseData);
       const reversedData = responseData.reverse();
       formattedData = reversedData.map((d) => {
-        let temp = { ...d, date: new Date(d.date) }
+        let temp = { ...d, date: new Date(d.date) };
         return temp;
       });
+      console.log(formattedData);
       const charts = [];
       charts.push(
         <CandleStick
@@ -54,11 +57,57 @@ function Ticker(props) {
 
   useEffect(() => {
     getData();
-  }, [sendRequest]);
+  }, [sendRequest, period]);
 
+  ///////////////////////////////////////////////////////////////////////////////////
+
+  const selectDaily = () => {
+    setPeriod("d");
+  };
+  const selectWeekly = () => {
+    setPeriod("w");
+  };
+  const selectMonthly = () => {
+    setPeriod("m");
+  };
+  const selectDividend = () => {
+    setPeriod("v");
+  };
+
+  ///////////////////////////////////////////////////////////////////////////////////
+
+  // some tickers dont have dividends, dividend period disabled temporarily
   return (
     <>
-      {!isLoading ? chartsToDisplay : <Spinner animation="grow" variant="light" size='lg' />}
+      <div className="d-flex justify-content-center py-2 px-5">
+        <Dropdown>
+          <Dropdown.Toggle variant="light">Select period</Dropdown.Toggle>
+          <Dropdown.Menu>
+            <Dropdown.Item onClick={selectDaily} active={period === "d"}>
+              Daily
+            </Dropdown.Item>
+            <Dropdown.Item onClick={selectWeekly} active={period === "w"}>
+              Weekly
+            </Dropdown.Item>
+            <Dropdown.Item onClick={selectMonthly} active={period === "m"}>
+              Monthly
+            </Dropdown.Item>
+            <Dropdown.Item
+              onClick={selectDividend}
+              active={period === "v"}
+              disabled
+            >
+              Every dividend
+            </Dropdown.Item>
+          </Dropdown.Menu>
+        </Dropdown>
+      </div>
+
+      {period && !isLoading ? (
+        chartsToDisplay
+      ) : (
+        <Spinner animation="grow" variant="light" size="lg" />
+      )}
     </>
   );
 }
