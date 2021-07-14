@@ -11,7 +11,8 @@ import {
 import { AuthContext } from "./contexts/auth-context";
 import Login from "./pages/login/Login";
 import Signup from "./pages/signup/Signup";
-import Test from "./pages/test/test";
+import Ticker from "./pages/ticker/Ticker";
+import Test from './pages/test/test'
 import ASTSNavbar from "./components/Navbar/ASTSNavbar";
 
 ///////////////////////////////////////////////////////////////////////////////////
@@ -135,10 +136,10 @@ function App() {
                 <ASTSNavbar />
                 <Switch>
                   <Route path="/" exact>
-                    "home"
+                    <Test />
                   </Route>
                   <Route path="/history/:ticker" exact>
-                    <Test />
+                    <Ticker />
                   </Route>
                   <Route>
                     <Redirect to="/" />

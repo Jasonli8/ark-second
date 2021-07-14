@@ -5,6 +5,7 @@ import { Spinner, Dropdown } from "react-bootstrap";
 
 import ContentContainer from "../ContentContainer/ContentContainer";
 import CandleStick from "./Graph/CandleStick";
+import ErrorModal from '../Error/ErrorModal'
 import { AuthContext } from "../../contexts/auth-context";
 import { useHttpClient } from "../../helpers/hooks/http-hook";
 
@@ -79,6 +80,7 @@ function Ticker(props) {
   // some tickers dont have dividends, dividend period disabled temporarily
   return (
     <>
+      <ErrorModal error={error} clearError={clearError} />
       <div className="d-flex justify-content-center py-2 px-5">
         <Dropdown>
           <Dropdown.Toggle variant="light">Select period</Dropdown.Toggle>

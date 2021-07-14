@@ -31,7 +31,12 @@ export const useHttpClient = () => {
         return responseData;
       } catch (err) {
         setIsLoading(false);
-        setError(err.message);
+        console.log(err);
+        if (err.message === 'Failed to fetch') {
+          setError('Couldn\'t retrieve data. Please try again later. (Error code: 503)')
+        } else {
+          setError(err.message);
+        }
         throw err;
       }
     },

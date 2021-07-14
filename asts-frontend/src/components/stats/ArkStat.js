@@ -5,6 +5,7 @@ import { Spinner } from "react-bootstrap"
 
 import ContentContainer from "../ContentContainer/ContentContainer";
 import BarStack from "./Graph/BarStack";
+import ErrorModal from '../Error/ErrorModal'
 import { AuthContext } from "../../contexts/auth-context";
 import { useHttpClient } from "../../helpers/hooks/http-hook";
 
@@ -140,7 +141,8 @@ function Test(props) {
 
   return (
     <>
-      <>{!isLoading ? chartsToDisplay : <Spinner animation="grow" variant="light" size='lg' />}</>
+      <ErrorModal error={error} clearError={clearError}/>
+      {!isLoading ? chartsToDisplay : <Spinner animation="grow" variant="light" size='lg' />}
     </>
   );
 }

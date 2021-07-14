@@ -113,7 +113,7 @@ let BarStack = (props) => {
         <ScatterSeries
           yAccessor={(d) => d.close}
           marker={CircleMarker}
-          markerProps={{ r: 2, stroke: "#000000", fill: "000000", opacity: 1 }}
+          markerProps={{ r: 2, stroke: "#000000", fill: "#000000", opacity: 1 }}
         />
         <MouseCoordinateX
           at="bottom"
