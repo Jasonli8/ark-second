@@ -15,7 +15,7 @@ function Ticker(props) {
   const ticker = props.ticker;
   const [period, setPeriod] = useState("d");
   const auth = useContext(AuthContext);
-  const { isLoading, error, sendRequest, clearError } = useHttpClient();
+  const { isLoading, error, errorDetails, sendRequest, clearError } = useHttpClient();
   const [chartsToDisplay, setChartsToDisplay] = useState([]);
 
   ///////////////////////////////////////////////////////////////////////////////////
@@ -33,13 +33,11 @@ function Ticker(props) {
           Authorization: "Bearer " + auth.token,
         }
       );
-      console.log(responseData);
       const reversedData = responseData.reverse();
       formattedData = reversedData.map((d) => {
         let temp = { ...d, date: new Date(d.date) };
         return temp;
       });
-      console.log(formattedData);
       const charts = [];
       charts.push(
         <CandleStick
@@ -80,7 +78,7 @@ function Ticker(props) {
   // some tickers dont have dividends, dividend period disabled temporarily
   return (
     <>
-      <ErrorModal error={error} clearError={clearError} />
+      <ErrorModal error={error} errorDetails={errorDetails} clearError={clearError} />
       <div className="d-flex justify-content-center py-2 px-5">
         <Dropdown>
           <Dropdown.Toggle variant="light">Select period</Dropdown.Toggle>

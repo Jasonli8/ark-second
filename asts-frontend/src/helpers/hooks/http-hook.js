@@ -3,6 +3,7 @@ import { useState, useCallback, useRef, useEffect } from "react";
 export const useHttpClient = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState();
+  const [errorDetails, setErrorDetails] = useState();
 
   const activeHttpRequests = useRef([]);
 
@@ -25,18 +26,14 @@ export const useHttpClient = () => {
           (reqCtrl) => reqCtrl !== httpAbortCtrl
         );
         if (!response.ok) {
+          setError(`Couldn\'t retrieve data. Please try again later. (Error code: ${response.status})`)
+          setErrorDetails(responseData.message);
           throw new Error(responseData.message);
         }
         setIsLoading(false);
         return responseData;
       } catch (err) {
         setIsLoading(false);
-        console.log(err);
-        if (err.message === 'Failed to fetch') {
-          setError('Couldn\'t retrieve data. Please try again later. (Error code: 503)')
-        } else {
-          setError(err.message);
-        }
         throw err;
       }
     },
@@ -45,6 +42,7 @@ export const useHttpClient = () => {
 
   const clearError = () => {
     setError(null);
+    setErrorDetails(null);
   };
 
   useEffect(() => {
@@ -55,5 +53,5 @@ export const useHttpClient = () => {
     };
   }, []);
 
-  return { isLoading, error, sendRequest, clearError };
+  return { isLoading, error, errorDetails, sendRequest, clearError };
 };

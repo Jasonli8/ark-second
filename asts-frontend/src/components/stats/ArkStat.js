@@ -18,7 +18,7 @@ const period = "d";
 function Test(props) {
   const ticker = props.ticker;
   const auth = useContext(AuthContext);
-  const { isLoading, error, sendRequest, clearError } = useHttpClient();
+  const { isLoading, error, errorDetails, sendRequest, clearError } = useHttpClient();
   const [chartsToDisplay, setChartsToDisplay] = useState([]);
 
   const getData = async () => {
@@ -43,7 +43,6 @@ function Test(props) {
           Authorization: "Bearer " + auth.token,
         }
       );
-      console.log(responseData2);
       let cumulativeHolding;
       let currDate;
       let filledFunds = [];
@@ -69,12 +68,10 @@ function Test(props) {
             filledFunds.push(0);
           }
           currDate = responseData1[data].date;
-          console.log(currDate);
           const closeIndex = responseData2.findIndex((d) => {
             console.log(d.date)
             return (d.date).substring(0, 10) === currDate.substring(0, 10);
           });
-          console.log(closeIndex)
           cumulativeHolding = {
             date: new Date(responseData1[data].date),
             close: responseData2[closeIndex].close,
@@ -116,8 +113,6 @@ function Test(props) {
       currDate = responseData1[data].date;
       cumulativeHolding = { date: responseData1[data].date };
 
-      console.log(formattedData);
-
       const charts = [];
       charts.push(
         <BarStack
@@ -141,7 +136,7 @@ function Test(props) {
 
   return (
     <>
-      <ErrorModal error={error} clearError={clearError}/>
+      <ErrorModal error={error} errorDetails={errorDetails} clearError={clearError}/>
       {!isLoading ? chartsToDisplay : <Spinner animation="grow" variant="light" size='lg' />}
     </>
   );
