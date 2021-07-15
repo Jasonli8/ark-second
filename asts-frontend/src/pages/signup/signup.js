@@ -19,7 +19,6 @@ function Login() {
 
   useEffect(() => {
     const getQuestions = async () => {
-      console.log("getting questions");
       let data; 
       try {
         data = await sendRequest("http://localhost:5000/user/questions");
