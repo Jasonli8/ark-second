@@ -5,7 +5,7 @@ function ASTSNavbar() {
   return (
     <>
       <Navbar style={{backgroundColor: "#8364FF", paddingLeft: "20vw", paddingRight: "20vw", filter: "drop-shadow(0px 0px 5px rgba(0, 0, 0, 0.2))"}} variant="dark">
-        <Navbar.Brand href="#home">ASTS</Navbar.Brand>
+        <Navbar.Brand href="/">ASTS</Navbar.Brand>
         <Nav className="mr-auto">
           <Nav.Link href="">nav1</Nav.Link>
           <Nav.Link href="">nav2</Nav.Link>
