@@ -5,7 +5,8 @@ import { Spinner } from "react-bootstrap"
 
 import ContentContainer from "../ContentContainer/ContentContainer";
 import BarStack from "./Graph/BarStack";
-import ErrorModal from '../Error/ErrorModal'
+import ErrorNotif from '../Error/ErrorNotif'
+import LoadingSpinner from "../Loading/LoadingSpinner";
 import { AuthContext } from "../../contexts/auth-context";
 import { useHttpClient } from "../../helpers/hooks/http-hook";
 
@@ -69,7 +70,6 @@ function Test(props) {
           }
           currDate = responseData1[data].date;
           const closeIndex = responseData2.findIndex((d) => {
-            console.log(d.date)
             return (d.date).substring(0, 10) === currDate.substring(0, 10);
           });
           cumulativeHolding = {
@@ -131,13 +131,14 @@ function Test(props) {
   };
 
   useEffect(() => {
+    clearError();
     getData();
   }, [sendRequest]);
 
   return (
     <>
-      <ErrorModal error={error} errorDetails={errorDetails} clearError={clearError}/>
-      {!isLoading ? chartsToDisplay : <Spinner animation="grow" variant="light" size='lg' />}
+      {error && <ErrorNotif error={error} errorDetails={errorDetails} />}
+      {!isLoading ? chartsToDisplay : <LoadingSpinner />}
     </>
   );
 }

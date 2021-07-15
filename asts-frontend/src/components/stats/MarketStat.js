@@ -5,7 +5,8 @@ import { Spinner, Dropdown } from "react-bootstrap";
 
 import ContentContainer from "../ContentContainer/ContentContainer";
 import CandleStick from "./Graph/CandleStick";
-import ErrorModal from '../Error/ErrorModal'
+import ErrorNotif from "../Error/ErrorNotif";
+import LoadingSpinner from "../Loading/LoadingSpinner";
 import { AuthContext } from "../../contexts/auth-context";
 import { useHttpClient } from "../../helpers/hooks/http-hook";
 
@@ -15,7 +16,8 @@ function Ticker(props) {
   const ticker = props.ticker;
   const [period, setPeriod] = useState("d");
   const auth = useContext(AuthContext);
-  const { isLoading, error, errorDetails, sendRequest, clearError } = useHttpClient();
+  const { isLoading, error, errorDetails, sendRequest, clearError } =
+    useHttpClient();
   const [chartsToDisplay, setChartsToDisplay] = useState([]);
 
   ///////////////////////////////////////////////////////////////////////////////////
@@ -26,7 +28,7 @@ function Ticker(props) {
     const fromDate = new Date(2010, 1, 1).toISOString().substring(0, 10);
     try {
       let responseData = await sendRequest(
-        `http://localhost:5000/api/fin/history?ticker=${ticker}&period=${period}&fromDate=${fromDate}&toDate=${toDate}`,
+        `http://localhost:5000/api/fin/history?ticker=${ticker}&period=${period}&fromDate=${fromDate}&toDate=${toDate}`, //&toDate=${toDate}
         "GET",
         null,
         {
@@ -55,6 +57,7 @@ function Ticker(props) {
   };
 
   useEffect(() => {
+    clearError();
     getData();
   }, [sendRequest, period]);
 
@@ -78,35 +81,37 @@ function Ticker(props) {
   // some tickers dont have dividends, dividend period disabled temporarily
   return (
     <>
-      <ErrorModal error={error} errorDetails={errorDetails} clearError={clearError} />
-      <div className="d-flex justify-content-center py-2 px-5">
-        <Dropdown>
-          <Dropdown.Toggle variant="light">Select period</Dropdown.Toggle>
-          <Dropdown.Menu>
-            <Dropdown.Item onClick={selectDaily} active={period === "d"}>
-              Daily
-            </Dropdown.Item>
-            <Dropdown.Item onClick={selectWeekly} active={period === "w"}>
-              Weekly
-            </Dropdown.Item>
-            <Dropdown.Item onClick={selectMonthly} active={period === "m"}>
-              Monthly
-            </Dropdown.Item>
-            <Dropdown.Item
-              onClick={selectDividend}
-              active={period === "v"}
-              disabled
-            >
-              Every dividend
-            </Dropdown.Item>
-          </Dropdown.Menu>
-        </Dropdown>
-      </div>
+      {error && <ErrorNotif error={error} errorDetails={errorDetails} />}
+      {!error && (
+        <div className="d-flex justify-content-center py-2 px-5">
+          <Dropdown>
+            <Dropdown.Toggle variant="light">Select period</Dropdown.Toggle>
+            <Dropdown.Menu>
+              <Dropdown.Item onClick={selectDaily} active={period === "d"}>
+                Daily
+              </Dropdown.Item>
+              <Dropdown.Item onClick={selectWeekly} active={period === "w"}>
+                Weekly
+              </Dropdown.Item>
+              <Dropdown.Item onClick={selectMonthly} active={period === "m"}>
+                Monthly
+              </Dropdown.Item>
+              <Dropdown.Item
+                onClick={selectDividend}
+                active={period === "v"}
+                disabled
+              >
+                Every dividend
+              </Dropdown.Item>
+            </Dropdown.Menu>
+          </Dropdown>
+        </div>
+      )}
 
       {period && !isLoading ? (
         chartsToDisplay
       ) : (
-        <Spinner animation="grow" variant="light" size="lg" />
+        <LoadingSpinner />
       )}
     </>
   );

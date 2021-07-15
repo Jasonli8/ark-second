@@ -1,9 +1,10 @@
 import React, { useContext, useState, useEffect } from "react";
-import { Form, Button, Spinner } from "react-bootstrap";
+import { Form, Button } from "react-bootstrap";
 
 ///////////////////////////////////////////////////////////////////////////////////
 
 import ContentContainer from "../../components/ContentContainer/ContentContainer";
+import LoadingSpinner from '../../components/Loading/LoadingSpinner'
 import { AuthContext } from "../../contexts/auth-context";
 import { useHttpClient } from "../../helpers/hooks/http-hook";
 
@@ -37,14 +38,6 @@ function Login() {
 
   const signupSubmitHandler = async (event) => {
     event.preventDefault();
-    console.log("submit handler called");
-    console.log(event.currentTarget.userName.value);
-    console.log(event.currentTarget.firstName.value);
-    console.log(event.currentTarget.lastName.value);
-    console.log(event.currentTarget.email.value);
-    console.log(event.currentTarget.password.value);
-    console.log(event.currentTarget.securityQuestion.value);
-    console.log(event.currentTarget.answer.value);
     try {
       const responseData = await sendRequest(
         "http://localhost:5000/user/signup",
@@ -78,11 +71,11 @@ function Login() {
   return (
     <>
       {isLoading ? (
-        <Spinner animation="grow" />
+        <LoadingSpinner />
       ) : (
-        <ContentContainer addClass="mt-5">
+        <ContentContainer addClass="mt-5 p-3 text-light">
           <Form onSubmit={signupSubmitHandler}>
-            <h1>Login</h1>
+            <h1>Signup</h1>
             <Form.Group controlId="userName">
               <Form.Label>Username</Form.Label>
               <Form.Control type="input" placeholder="Username" />
@@ -115,7 +108,8 @@ function Login() {
               <Form.Label>Answer to security question</Form.Label>
               <Form.Control type="input" placeholder="Answer" />
             </Form.Group>
-            <Button type="submit">Login</Button>
+            <Button type="submit">Signup</Button>
+            <Button variant="secondary" href="/login" className="ml-3">Cancel</Button>
           </Form>
         </ContentContainer>
       )}

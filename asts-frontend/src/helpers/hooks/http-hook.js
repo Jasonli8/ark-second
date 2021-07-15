@@ -7,6 +7,8 @@ export const useHttpClient = () => {
 
   const activeHttpRequests = useRef([]);
 
+  let activeError = false;
+
   const sendRequest = useCallback(
     async (url, method = "GET", body = null, headers = {}) => {
       setIsLoading(true);
@@ -17,7 +19,7 @@ export const useHttpClient = () => {
         headers,
         body,
         signal: httpAbortCtrl.signal,
-      }
+      };
       try {
         const response = await fetch(url, options);
         const responseData = await response.json();
@@ -26,13 +28,20 @@ export const useHttpClient = () => {
           (reqCtrl) => reqCtrl !== httpAbortCtrl
         );
         if (!response.ok) {
-          setError(`Couldn\'t retrieve data. Please try again later. (Error code: ${response.status})`)
-          setErrorDetails(responseData.message);
+          setError(`Couldn\'t retrieve data. Please try again later.`);
+          setErrorDetails(`${response.status} Error: ${responseData.message}`);
+          activeError = true;
           throw new Error(responseData.message);
         }
         setIsLoading(false);
         return responseData;
       } catch (err) {
+        if (!activeError) {
+          setError(
+            `Couldn\'t connect. Please check your connection and try again.`
+          );
+          setErrorDetails(`${503} Error: Fetch called upon an unavailable service.`);
+        }
         setIsLoading(false);
         throw err;
       }
@@ -43,6 +52,7 @@ export const useHttpClient = () => {
   const clearError = () => {
     setError(null);
     setErrorDetails(null);
+    activeError=false;
   };
 
   useEffect(() => {

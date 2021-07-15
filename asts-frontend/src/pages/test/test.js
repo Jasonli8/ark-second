@@ -1,5 +1,5 @@
 import React, {useState} from 'react'
-import ErrorModal from '../../components/Error/ErrorModal'
+import ErrorNotif from '../../components/Error/ErrorNotif'
 
 function Test() {
     const [error, setError] = useState('test error message');
@@ -7,7 +7,7 @@ function Test() {
         setError();
     }
     return (
-        <ErrorModal error={error} clearError={clearError} />
+        <ErrorNotif error={error} errorDetails="test error details" />
     )
 }
 

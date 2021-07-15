@@ -63,7 +63,8 @@ let BarStack = (props) => {
   const xGrid = showGrid ? { innerTickSize: -1 * gridHeight } : {};
 
   return (
-    <ChartCanvas
+    <div className="d-flex justify-content-center py-4">
+      <ChartCanvas
       height={height}
       width={width}
       margin={margin}
@@ -128,6 +129,8 @@ let BarStack = (props) => {
       </Chart>
       <CrossHairCursor />
     </ChartCanvas>
+    </div>
+    
   );
 };
 

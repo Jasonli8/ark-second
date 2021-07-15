@@ -34,13 +34,13 @@ let CandleStick = (props) => {
   const end = xAccessor(data[Math.max(0, data.length - 100)]);
   const xExtents = [start, end];
 
-  const gridHeight = height - margin.top - margin.bottom;
   const gridWidth = width - margin.left - margin.right;
 
   const showGrid = true;
   const yGrid = showGrid ? { innerTickSize: -1 * gridWidth } : {};
 
   return (
+    <div className="d-flex justify-content-center pb-4">
     <ChartCanvas
       height={height}
       width={width}
@@ -119,6 +119,7 @@ let CandleStick = (props) => {
       </Chart>
       <CrossHairCursor />
     </ChartCanvas>
+    </div>
   );
 };
 
