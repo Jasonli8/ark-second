@@ -1,16 +1,77 @@
-import React from "react";
-import {Navbar, Nav, Form, FormControl, Button} from 'react-bootstrap';
+import React, { useEffect, useState, useContext } from "react";
+import {
+  Navbar,
+  Nav,
+  NavDropdown,
+  Form,
+  FormControl,
+  Button,
+} from "react-bootstrap";
+
+///////////////////////////////////////////////////////////////////////////////////
+
+import { useHttpClient } from "../../helpers/hooks/http-hook";
+import { AuthContext } from "../../contexts/auth-context";
+
+///////////////////////////////////////////////////////////////////////////////////
 
 function ASTSNavbar() {
+  const auth = useContext(AuthContext);
+  const { isLoading, error, sendRequest, clearError } = useHttpClient();
+  const [fundsLoaded, setFundsLoaded] = useState(false);
+  const [fundNav, setFundNav] = useState();
+
+  useEffect(() => {
+    const getFunds = async () => {
+      let data;
+      try {
+        data = await sendRequest(
+          "http://localhost:5000/api/db/funds",
+          "GET",
+          null,
+          {
+            Authorization: "Bearer " + auth.token,
+          }
+        );
+        setFundNav(await data[0].map((fundObj) => {
+          console.log(fundObj)
+          return (
+            <NavDropdown.Item href={`/fund/${fundObj.fundName}`}>
+              {fundObj.fundName}
+            </NavDropdown.Item>
+          );
+        }));
+      } catch (err) {
+        console.log(err);
+        return;
+      }
+      console.log(fundNav);
+      setFundsLoaded(true);
+    };
+    getFunds();
+  }, [sendRequest]);
+
   return (
     <>
-      <Navbar style={{backgroundColor: "#8364FF", paddingLeft: "20vw", paddingRight: "20vw", filter: "drop-shadow(0px 0px 5px rgba(0, 0, 0, 0.2))"}} variant="dark">
+      <Navbar
+        style={{
+          backgroundColor: "#8364FF",
+          paddingLeft: "20vw",
+          paddingRight: "20vw",
+          filter: "drop-shadow(0px 0px 5px rgba(0, 0, 0, 0.2))",
+        }}
+        variant="dark"
+      >
         <Navbar.Brand href="/">ASTS</Navbar.Brand>
-        <Nav className="mr-auto">
-          <Nav.Link href="">nav1</Nav.Link>
-          <Nav.Link href="">nav2</Nav.Link>
-          <Nav.Link href="">nav3</Nav.Link>
-        </Nav>
+
+        <Navbar.Collapse id="navbar-fund-drop">
+          <Nav>
+            <NavDropdown id="nav-fund-drop" title="Funds" menuVariant="dark">
+              {setFundsLoaded && !isLoading && fundNav}
+            </NavDropdown>
+          </Nav>
+        </Navbar.Collapse>
+
         <Form inline>
           <FormControl type="text" placeholder="Search" className="mr-sm-2" />
           <Button variant="outline-light">Search</Button>
