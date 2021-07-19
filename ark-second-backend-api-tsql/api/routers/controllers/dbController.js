@@ -13,7 +13,7 @@ const checkTicker = require("../../../components/helpers/checkTicker");
 const toArray = (str) => {
   const arr = str.split(",");
   return arr;
-}
+};
 
 ////////////////////////////////////////////////////////////////
 
@@ -21,6 +21,41 @@ const toArray = (str) => {
 const getFunds = async (req, res, next) => {
   const query =
     "select [f].[fundName], [f].[description] from [Shares].[Fund] as [f] order by [f].[fundName] asc";
+  queryDB(query)
+    .then((result) => {
+      if (result[0] === 200) {
+        res.status(200).json(result[1].recordsets);
+      } else {
+        return next(new HttpError("Something went wrong.", result[0]));
+      }
+    })
+    .catch((err) => {
+      return next(
+        new HttpError("Something went wrong. Couldn't get data", 500)
+      );
+    });
+};
+
+// getRecent(string fundType) gets most recent data on all tickers for a given fund
+const getRecent = async (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return next(new HttpError("Invalid input", 422));
+  }
+
+  const { fundType } = req.query;
+  const query = `WITH All_Holding([fundName],[description],[companyId],[companyName],[ticker],[cusip],[date],[shares],[marketValue],[weight],[sharesDifference],[marketValueDifference],[maxDate]) 
+    AS (
+    SELECT [fundName],[description],[companyId],[companyName],[ticker],[cusip],[date],[shares],[marketValue],[weight],([shares]-LAG([shares],1) OVER(PARTITION BY [ticker] ORDER BY [date])) AS [sharesDifference], ([marketValue]-LAG([marketValue],1) OVER(PARTITION BY [ticker] ORDER BY [date])) AS [marketValueDifference], (MAX([date]) OVER (PARTITION BY [ticker])) AS [maxDate]
+    FROM [Shares].[Company] AS [c] 
+    JOIN [Shares].[Holding] AS [h] ON [h].[companyId] = [c].[Id] 
+    JOIN [Shares].[Fund] AS [f] ON [f].[Id] = [h].[fundId]
+    WHERE [fundName]='${fundType}'
+    )
+    SELECT [fundName],[description],[companyId],[companyName],[ticker],[cusip],[date],[shares],[marketValue],[weight],[sharesDifference],[marketValueDifference]
+    FROM All_Holding
+    WHERE [date]=[maxDate]
+    ORDER BY companyID ASC`;
   queryDB(query)
     .then((result) => {
       if (result[0] === 200) {
@@ -64,7 +99,7 @@ const getFundsHoldingByDate = async (req, res, next) => {
   for (var i = 1; i < fundLen; i++) {
     formattedFund += ` OR [fundName] = '${funds[i]}'`;
   }
-  formattedFund += ')'
+  formattedFund += ")";
 
   const query2 =
     `WITH All_Holding([fundName],[description],[companyId],[companyName],[ticker],[cusip],[date],[shares],[marketValue],[weight]) AS (SELECT [fundName],[description],[companyId],[companyName],[ticker],[cusip],[date],[shares],[marketValue],[weight] FROM [Shares].[Company] AS [c] JOIN [Shares].[Holding] AS [h] ON [h].[companyId] = [c].[Id] JOIN [Shares].[Fund] AS [f] ON [f].[Id] = [h].[fundId]) ` +
@@ -115,7 +150,7 @@ const getFundHoldingByTicker = async (req, res, next) => {
   for (var i = 1; i < fundLen; i++) {
     formattedFund += ` OR [fundName] = '${funds[i]}'`;
   }
-  formattedFund += ')'
+  formattedFund += ")";
 
   const query =
     `WITH All_Holding([fundName],[description],[companyId],[companyName],[ticker],[cusip],[date],[shares],[marketValue],[weight]) AS (SELECT [fundName],[description],[companyId],[companyName],[ticker],[cusip],[date],[shares],[marketValue],[weight] FROM [Shares].[Company] AS [c] JOIN [Shares].[Holding] AS [h] ON [h].[companyId] = [c].[Id] JOIN [Shares].[Fund] AS [f] ON [f].[Id] = [h].[fundId]) ` +
@@ -162,7 +197,7 @@ const getChangeByTicker = async (req, res, next) => {
       if (result[0] === 200) {
         res.status(200).json(result[1].recordsets[0]);
       } else {
-        console.log("error 1") // console.log
+        console.log("error 1"); // console.log
         return next(new HttpError("Something went wrong.", result[0]));
       }
     })
@@ -176,6 +211,7 @@ const getChangeByTicker = async (req, res, next) => {
 ////////////////////////////////////////////////////////////////
 
 exports.getFunds = getFunds;
+exports.getRecent = getRecent;
 exports.getFundsHoldingByDate = getFundsHoldingByDate;
 exports.getFundHoldingByTicker = getFundHoldingByTicker;
 exports.getChangeByTicker = getChangeByTicker;

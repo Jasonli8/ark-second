@@ -42,6 +42,13 @@ router.get(
   dbController.getChangeByTicker
 );
 
+// gets most recent data on all tickers for a given fund
+router.get(
+  "/db/funds/recent",
+  query("fundType").isString(),
+  dbController.getRecent
+);
+
 // gets the list of tracked funds
 router.get("/db/funds", dbController.getFunds);
 

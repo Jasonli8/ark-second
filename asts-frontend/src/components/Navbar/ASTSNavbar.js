@@ -33,32 +33,45 @@ function ASTSNavbar() {
             Authorization: "Bearer " + auth.token,
           }
         );
-        setFundNav(await data[0].map((fundObj) => {
-          console.log(fundObj)
-          return (
-            <NavDropdown.Item href={`/fund/${fundObj.fundName}`}>
-              {fundObj.fundName}
-            </NavDropdown.Item>
-          );
-        }));
+        setFundNav(
+          await data[0].map((fundObj) => {
+            console.log(fundObj);
+            return (
+              <NavDropdown.Item href={`/fund/${fundObj.fundName}`}>
+                {fundObj.fundName}
+              </NavDropdown.Item>
+            );
+          })
+        );
+        setFundsLoaded(true);
       } catch (err) {
         console.log(err);
         return;
       }
       console.log(fundNav);
-      setFundsLoaded(true);
     };
     getFunds();
   }, [sendRequest]);
 
   return (
     <>
+    <div
+      style={{
+        position: "absolute",
+        display: "flex",
+        width: "100vw",
+        "z-index": "100",
+      }}
+    >
       <Navbar
         style={{
           backgroundColor: "#8364FF",
           paddingLeft: "20vw",
           paddingRight: "20vw",
           filter: "drop-shadow(0px 0px 5px rgba(0, 0, 0, 0.2))",
+          width: "100vw",
+          position: "fixed",
+          height: "60px"
         }}
         variant="dark"
       >
@@ -77,6 +90,8 @@ function ASTSNavbar() {
           <Button variant="outline-light">Search</Button>
         </Form>
       </Navbar>
+    </div>
+    <div style={{height: "60px"}}/>
     </>
   );
 }

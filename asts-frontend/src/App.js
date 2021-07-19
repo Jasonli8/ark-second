@@ -11,6 +11,7 @@ import {
 import { AuthContext } from "./contexts/auth-context";
 import Login from "./pages/login/Login";
 import Signup from "./pages/signup/Signup";
+import Fund from './pages/fund/Fund'
 import Ticker from "./pages/ticker/Ticker";
 import Test from './pages/test/test'
 import ASTSNavbar from "./components/Navbar/ASTSNavbar";
@@ -140,6 +141,9 @@ function App() {
                   </Route>
                   <Route path="/history/:ticker" exact>
                     <Ticker />
+                  </Route>
+                  <Route path="/fund/:fundName" exact>
+                    <Fund />
                   </Route>
                   <Route>
                     <Redirect to="/" />
