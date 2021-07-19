@@ -67,13 +67,14 @@ const csvProcess = async () => {
             return;
           }
           const name = data[2].substr(1, data[2].length - 2);
+          const ticker = data[3].indexOf("\"") !== -1 ? data[3].substr(1, data[3].length - 2) : data[3];
           const dateParts = data[0].split("/");
           const date = `'${dateParts[2]}-${dateParts[0]}-${dateParts[1]}'`;
           const query1 =
-            `IF NOT EXISTS (SELECT * FROM [Shares].[Company] WHERE [companyName] = '${name}' AND [ticker] = '${data[3]}' AND [cusip] = '${data[4]}') ` +
-            `IF EXISTS (SELECT * FROM [Shares].[Company] WHERE [companyName] = '${name}' OR [ticker] = '${data[3]}') ` +
-            `UPDATE [Shares].[Company] SET [companyName] = '${name}', [ticker] = '${data[3]}', [cusip] = '${data[4]}' WHERE [companyName] = '${name}' OR [ticker] = '${data[3]}' ` +
-            `ELSE INSERT INTO [Shares].[Company]([companyName], [ticker], [cusip]) VALUES ('${name}','${data[3]}','${data[4]}')`;
+            `IF NOT EXISTS (SELECT * FROM [Shares].[Company] WHERE [companyName] = '${name}' AND [ticker] = '${ticker}' AND [cusip] = '${data[4]}') ` +
+            `IF EXISTS (SELECT * FROM [Shares].[Company] WHERE [companyName] = '${name}' OR [ticker] = '${ticker}') ` +
+            `UPDATE [Shares].[Company] SET [companyName] = '${name}', [ticker] = '${ticker}', [cusip] = '${data[4]}' WHERE [companyName] = '${name}' OR [ticker] = '${ticker}' ` +
+            `ELSE INSERT INTO [Shares].[Company]([companyName], [ticker], [cusip]) VALUES ('${name}','${ticker}','${data[4]}')`;
           const query2 =
             `IF EXISTS (SELECT * FROM [Shares].[Company] AS [c] JOIN [Shares].[Holding] AS [h] ON [c].[Id] = [h].[companyId] JOIN [Shares].[Fund] AS [f] ON [f].[Id] = [h].[fundId] WHERE [companyName] = '${name}' AND [fundName] = '${fund.fundName}' AND [date] = ${date}) ` +
             `WITH All_Holdings ([companyName], [fundName], [date], [shares], [marketValue], [weight]) AS (SELECT [companyName], [fundName], [date], [shares], [marketValue], [weight] FROM [Shares].[Company] AS [c] JOIN [Shares].[Holding] AS [h] ON [c].[Id] = [h].[companyId] JOIN [Shares].[Fund] AS [f] ON [f].[Id] = [h].[fundId]) ` +

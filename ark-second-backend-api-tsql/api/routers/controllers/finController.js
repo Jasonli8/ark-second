@@ -83,7 +83,7 @@ const getQuote = async (req, res, next) => {
   }
 
   try {
-    yahooFinance.quote(
+    await yahooFinance.quote(
       {
         symbol: `${ticker}`,
         modules: ["price"],
@@ -95,7 +95,8 @@ const getQuote = async (req, res, next) => {
             "Failed to get quote in finController",
             "finReq"
           );
-          throw new HttpError("Something went wrong. Couldn't get data.", 400);
+          console.log(ticker);
+          throw new HttpError(`Something went wrong. Couldn't get data for ${ticker}`, 400);
         }
 
         res.status(200).json(snapshot);
