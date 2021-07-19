@@ -323,23 +323,75 @@ paths:
             items:
               type: object
               properties:
-                date:
-                  type: string
-                  example: "2021-06-15T04:00:00.000Z"
-                open:
-                  type: number
-                high:
-                  type: number
-                low:
-                  type: number
-                close:
-                  type: number
-                adjClose:
-                  type: number
-                volume:
-                  type: number
-                symbol:
-                  type: string
+                price:
+                  type: object
+                  properties:
+                    maxAge:
+                      type: number
+                    preMarketChangePercent:
+                      type: number
+                    preMarketChange:
+                      type: number
+                    preMarketTime:
+                      type: string
+                      format: date
+                    preMarketPrice:
+                      type: number
+                    preMarketSource:
+                      type: string
+                    regularMarketChangePercent:
+                      type: number
+                    regularMarketChange:
+                      type: number
+                    regularMarketTime:
+                      type: string
+                      format: date
+                    priceHint:
+                      type: number
+                    regularMarketDayHigh:
+                      type: number
+                    regularMarketDayLow:
+                      type: number
+                    regularMarketVolume:
+                      type: number
+                    regularMarketPreviousClose:
+                      type: number
+                    regularMarketSource:
+                      type: string
+                    regularMarketOpen:
+                      type: number
+                    exchange:
+                      type: string
+                    exchangeName:
+                      type: string
+                    exchangeDataDelayedBy:
+                      type: number
+                    marketState:
+                      type: string
+                    quoteType:
+                      type: string
+                    symbol:
+                      type: string
+                    underlyingSymbol:
+                      type: string
+                    shortName:
+                      type: string
+                    longName:
+                      type: string
+                    currency:
+                      type: string
+                    quoteSourceName:
+                      type: string
+                    currencySymbol:
+                      type: string
+                    fromCurrency:
+                      type: string
+                    toCurrency:
+                      type: string
+                    lastMarket:
+                      type: string
+                    marketCap:
+                      type: number
         '422':
           description: Parameters are of an invalid format.
         '500':

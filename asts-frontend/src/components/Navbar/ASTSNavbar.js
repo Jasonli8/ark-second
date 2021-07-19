@@ -48,7 +48,6 @@ function ASTSNavbar() {
         console.log(err);
         return;
       }
-      console.log(fundNav);
     };
     getFunds();
   }, [sendRequest]);

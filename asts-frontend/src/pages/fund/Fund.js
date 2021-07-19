@@ -14,16 +14,18 @@ import { AuthContext } from "../../contexts/auth-context";
 
 function Fund() {
   const auth = useContext(AuthContext);
-  const { isLoading, error, errorDetails, sendRequest, clearError } = useHttpClient();
+  const { isLoading, error, errorDetails, sendRequest, clearError } =
+    useHttpClient();
   const [tickerStats, setTickerStats] = useState([]);
   const [tickerStatsLoaded, setTickerStatsLoaded] = useState(false);
   const fund = useParams().fundName;
 
   useEffect(() => {
-    const getTickers = async () => {
-      let data;
+    const getRecent = async () => {
+      let data1;
+      let data2;
       try {
-        data = await sendRequest(
+        data1 = await sendRequest(
           `http://localhost:5000/api/db/funds/recent?fundType=${fund}`,
           "GET",
           null,
@@ -31,21 +33,52 @@ function Fund() {
             Authorization: "Bearer " + auth.token,
           }
         );
-        console.log(data);
+        console.log(data1);
         let eventKey = -1;
         setTickerStats(
-          await data[0].map((tickerObj) => {
+          await data1[0].map((tickerObj) => {
             console.log(tickerObj);
+            const getPrice = async (o) => {
+              if (tickerObj.ticker !== "") {
+                console.log("getting data2")
+                try {
+                  data2 = await sendRequest(
+                    `http://localhost:5000/api/fin/quote?ticker=${o.ticker}`,
+                    "GET",
+                    null,
+                    {
+                      Authorization: "Bearer " + auth.token,
+                    }
+                  );
+                } catch (err) {
+                  return new Error(err);
+                }
+                console.log(data2);
+                const tickerPrice = data2.price;
+                console.log(tickerPrice);
+                return tickerPrice;
+              }
+            };
+            const finObj = getPrice(tickerObj);
             const updatedDate = new Date(tickerObj.date).toString();
             eventKey += 1;
             return (
               <>
                 <Accordion.Toggle
                   as={Card.Header}
-                  style={{ background: "white", "min-height": "60px", filter: "drop-shadow(0px 0px 5px rgba(0, 0, 0, 0.2))" }}
+                  style={{
+                    background: "white",
+                    "min-height": "60px",
+                    filter: "drop-shadow(0px 0px 5px rgba(0, 0, 0, 0.2))",
+                  }}
                   eventKey={`${eventKey}`}
                 >
-                  <h3 className="ml-3">{tickerObj.ticker}<small className="text-muted ml-1 ">{tickerObj.companyName}</small></h3>
+                  <h3 className="ml-3">
+                    {tickerObj.ticker}
+                    <small className="text-muted ml-1 ">
+                      {tickerObj.companyName}
+                    </small>
+                  </h3>
                 </Accordion.Toggle>
                 <Accordion.Collapse eventKey={`${eventKey}`}>
                   <Card.Body
@@ -98,13 +131,17 @@ function Fund() {
         return;
       }
     };
-    getTickers();
+    getRecent();
   }, []);
 
   return (
     <ContentContainer addClass="p-4">
-      {error && <ErrorNotif error={error} errorDetails={errorDetails} />}
-      {!error && tickerStatsLoaded && !isLoading ? <Accordion>{tickerStats}</Accordion> :<LoadingSpinner />}
+      {!!error && <ErrorNotif error={error} errorDetails={errorDetails} />}
+      {!error && !!tickerStatsLoaded && !isLoading ? (
+        <Accordion>{tickerStats}</Accordion>
+      ) : (
+        <LoadingSpinner />
+      )}
     </ContentContainer>
   );
 }
