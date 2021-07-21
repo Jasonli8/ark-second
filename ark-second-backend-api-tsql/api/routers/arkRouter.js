@@ -42,11 +42,19 @@ router.get(
   dbController.getChangeByTicker
 );
 
-// gets most recent data on all tickers for a given fund
+// gets most recent data on a tickers for a given fund
 router.get(
   "/db/funds/recent",
   query("fundType").isString(),
+  query("companyId").isNumeric(),
   dbController.getRecent
+);
+
+// gets list of companies in a given fund
+router.get(
+  "/db/funds/companies",
+  query("fundType").isString(),
+  dbController.getCompanies
 );
 
 // gets the list of tracked funds

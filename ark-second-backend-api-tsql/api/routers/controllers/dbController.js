@@ -36,21 +36,21 @@ const getFunds = async (req, res, next) => {
     });
 };
 
-// getRecent(string fundType) gets most recent data on all tickers for a given fund
+// getRecent(string fundType, int companyId) gets most recent data on a company for a given fund
 const getRecent = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return next(new HttpError("Invalid input", 422));
   }
 
-  const { fundType } = req.query;
+  const { fundType, companyId } = req.query;
   const query = `WITH All_Holding([fundName],[description],[companyId],[companyName],[ticker],[cusip],[date],[shares],[marketValue],[weight],[sharesDifference],[marketValueDifference],[maxDate]) 
     AS (
     SELECT [fundName],[description],[companyId],[companyName],[ticker],[cusip],[date],[shares],[marketValue],[weight],([shares]-LAG([shares],1) OVER(PARTITION BY [ticker] ORDER BY [date])) AS [sharesDifference], ([marketValue]-LAG([marketValue],1) OVER(PARTITION BY [ticker] ORDER BY [date])) AS [marketValueDifference], (MAX([date]) OVER (PARTITION BY [ticker])) AS [maxDate]
     FROM [Shares].[Company] AS [c] 
     JOIN [Shares].[Holding] AS [h] ON [h].[companyId] = [c].[Id] 
     JOIN [Shares].[Fund] AS [f] ON [f].[Id] = [h].[fundId]
-    WHERE [fundName]='${fundType}'
+    WHERE [fundName]='${fundType}' AND [companyId]=${companyId}
     )
     SELECT [fundName],[description],[companyId],[companyName],[ticker],[cusip],[date],[shares],[marketValue],[weight],[sharesDifference],[marketValueDifference]
     FROM All_Holding
@@ -70,6 +70,40 @@ const getRecent = async (req, res, next) => {
       );
     });
 };
+
+// getCompanies(string fundType) gets list of all companies in a given fund
+const getCompanies = async (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return next(new HttpError("Invalid input", 422));
+  }
+
+  const { fundType } = req.query;
+  const query = `WITH All_Holding([fundName],[description],[companyId],[companyName],[ticker],[cusip])
+    AS (
+    SELECT [fundName],[description],[companyId],[companyName],[ticker],[cusip]
+    FROM [Shares].[Company] AS [c] 
+    JOIN [Shares].[Holding] AS [h] ON [h].[companyId] = [c].[Id] 
+    JOIN [Shares].[Fund] AS [f] ON [f].[Id] = [h].[fundId]
+    WHERE [fundName]='${fundType}'
+    )
+    SELECT DISTINCT [fundName],[description],[companyId],[companyName],[ticker],[cusip]
+    FROM All_Holding
+    ORDER BY companyID ASC`;
+  queryDB(query)
+    .then((result) => {
+      if (result[0] === 200) {
+        res.status(200).json(result[1].recordsets);
+      } else {
+        return next(new HttpError("Something went wrong.", result[0]));
+      }
+    })
+    .catch((err) => {
+      return next(
+        new HttpError("Something went wrong. Couldn't get data", 500)
+      );
+    });
+}
 
 // getFundsHoldingByDate([string] fundType, date date) gets cumulative (specified) holdings per ticker by date
 const getFundsHoldingByDate = async (req, res, next) => {
@@ -212,6 +246,7 @@ const getChangeByTicker = async (req, res, next) => {
 
 exports.getFunds = getFunds;
 exports.getRecent = getRecent;
+exports.getCompanies = getCompanies
 exports.getFundsHoldingByDate = getFundsHoldingByDate;
 exports.getFundHoldingByTicker = getFundHoldingByTicker;
 exports.getChangeByTicker = getChangeByTicker;

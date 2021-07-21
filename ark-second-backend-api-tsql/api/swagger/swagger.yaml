@@ -44,7 +44,60 @@ paths:
   
   /api/db/funds/recent:
     get:
-      summary: Gets most recent data on all tickers for a given fund.
+      summary: Gets most recent data on a company for a given fund.
+      security:
+        - Basic: []
+        - Bearer: []
+      parameters:
+        - name: fundType
+          in: query
+          required: true
+          type: string
+        - name: companyId
+          in: query
+          required: true
+          type: integer
+      responses:
+        '200':
+          description: Data is retrieved successfully.
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                fundName:
+                  type: string
+                description:
+                  type: string
+                companyId:
+                  type: integer
+                companyName:
+                  type: string
+                ticker:
+                  type: string
+                cusip:
+                  type: string
+                date:
+                  type: string
+                shares:
+                  type: number
+                marketValue:
+                  type: number
+                weight:
+                  type: number
+                sharesDifference:
+                  type: number
+                marketValueDifference:
+                  type: number
+        '422':
+          description: Parameters are of an invalid format.
+        '500':
+          description: Couldn't retrieve data from database.
+          
+          
+  /api/db/funds/companies:
+    get:
+      summary: Gets list of companies in a given fund.
       security:
         - Basic: []
         - Bearer: []
@@ -73,12 +126,6 @@ paths:
                   type: string
                 cusip:
                   type: string
-                date:
-                  type: string
-                sharesDifference:
-                  type: number
-                marketValueDifference:
-                  type: number
         '422':
           description: Parameters are of an invalid format.
         '500':
