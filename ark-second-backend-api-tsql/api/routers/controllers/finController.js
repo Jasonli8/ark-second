@@ -14,6 +14,7 @@ const checkTicker = require("../../../components/helpers/checkTicker");
 const getHistory = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
+    loggerError(errors, "Invalid input in getHistory", "httpParams");
     return next(new HttpError("Invalid input", 422));
   }
 
@@ -71,6 +72,7 @@ const getHistory = async (req, res, next) => {
 const getQuote = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
+    loggerError(errors, "Invalid input in getQuote", "httpParams");
     return next(new HttpError("Invalid input", 422));
   }
 

@@ -33,6 +33,7 @@ const getSecurityQuestions = async (req, res, next) => {
 const signup = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
+    loggerError(errors, "Invalid input in signup", "httpParams");
     return next(new HttpError("Invalid input", 422));
   }
 
@@ -165,7 +166,7 @@ const signup = async (req, res, next) => {
 const login = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    loggerError(errors, "Error in login, invalid input", "auth");
+    loggerError(errors, "Invalid input in login", "httpParams");
     return next(new HttpError("Invalid input", 422));
   }
 
@@ -248,6 +249,7 @@ const userRecovery = async (req, res, next) => {
   // to fix
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
+    loggerError(errors, "Invalid input in userRecovery", "httpParams");
     return next(new HttpError("Invalid input", 422));
   }
 
@@ -293,6 +295,7 @@ const userRecovery = async (req, res, next) => {
 const passwordRecovery = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
+    loggerError(errors, "Invalid input in passwordRecovery", "httpParams");
     return next(new HttpError("Invalid input", 422));
   }
   const { user } = req.body;
@@ -316,9 +319,10 @@ const passwordRecovery = async (req, res, next) => {
 };
 
 // passwordRecoveryComfirmation(string user, string answer) checks whether the answer matches the user's answer for their security question
-const passwordRecoveryComfirmation = async (req, res, next) => {
+const passwordRecoveryConfirmation = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
+    loggerError(errors, "Invalid input in passwordRecoveryConfirmation", "httpParams");
     return next(new HttpError("Invalid input", 422));
   }
   const { user, answer } = req.body;
@@ -408,6 +412,7 @@ const passwordRecoveryComfirmation = async (req, res, next) => {
 const updatePassword = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
+    loggerError(errors, "Invalid input in updatePassword", "httpParams");
     return next(new HttpError("Invalid input", 422));
   }
   const { password, confirmPassword } = req.body;
@@ -455,5 +460,5 @@ exports.signup = signup;
 exports.login = login;
 exports.userRecovery = userRecovery;
 exports.passwordRecovery = passwordRecovery;
-exports.passwordRecoveryComfirmation = passwordRecoveryComfirmation;
+exports.passwordRecoveryConfirmation = passwordRecoveryConfirmation;
 exports.updatePassword = updatePassword;

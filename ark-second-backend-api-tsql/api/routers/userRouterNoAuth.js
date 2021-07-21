@@ -54,7 +54,7 @@ router.post(
   "./recover/passwordConfirm",
   body("user").isLength({ min: 1 }),
   body("answer").isLength({ min: 1 }),
-  userController.passwordRecoveryComfirmation
+  userController.passwordRecoveryConfirmation
 );
 
 /////////////////////////////////////////////////////////////////////

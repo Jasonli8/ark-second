@@ -21,6 +21,14 @@ log4js.configure({
       type: "file",
       filename: "./logs/finReq.log",
     },
+    httpParams: {
+      type: "file",
+      filename: "./logs/httpParams.log",
+    },
+    error: {
+      type: "file",
+      filename: "./logs/error.log",
+    },
   },
   categories: {
     default: {
@@ -37,6 +45,14 @@ log4js.configure({
     },
     finReq: {
       appenders: ["finReq"],
+      level: process.env.LOG_LEVEL,
+    },
+    httpParams: {
+      appenders: ["httpParams"],
+      level: process.env.LOG_LEVEL,
+    },
+    error: {
+      appenders: ["error"],
       level: process.env.LOG_LEVEL,
     },
   },

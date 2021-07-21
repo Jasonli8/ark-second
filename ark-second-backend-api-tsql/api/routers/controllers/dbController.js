@@ -7,6 +7,7 @@ const queryDB = require("../../../components/helpers/queryDB");
 const checkFund = require("../../../components/helpers/checkFund");
 const checkDate = require("../../../components/helpers/checkDate");
 const checkTicker = require("../../../components/helpers/checkTicker");
+const { loggerError } = require("../../../components/helpers/logger");
 
 ////////////////////////////////////////////////////////////////
 
@@ -40,6 +41,7 @@ const getFunds = async (req, res, next) => {
 const getRecent = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
+    loggerError(errors, "Invalid input in getRecent", "httpParams");
     return next(new HttpError("Invalid input", 422));
   }
 
@@ -75,6 +77,7 @@ const getRecent = async (req, res, next) => {
 const getCompanies = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
+    loggerError(errors, "Invalid input in getCompanies", "httpParams");
     return next(new HttpError("Invalid input", 422));
   }
 
@@ -109,6 +112,7 @@ const getCompanies = async (req, res, next) => {
 const getFundsHoldingByDate = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
+    loggerError(errors, "Invalid input in getFundsHoldingByDate", "httpParams");
     return next(new HttpError("Invalid input", 422));
   }
 
@@ -157,6 +161,7 @@ const getFundsHoldingByDate = async (req, res, next) => {
 const getFundHoldingByTicker = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
+    loggerError(errors, "Invalid input in getFundHoldingByTicker", "httpParams");
     return next(new HttpError("Invalid input", 422));
   }
 
@@ -208,6 +213,7 @@ const getFundHoldingByTicker = async (req, res, next) => {
 const getChangeByTicker = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
+    loggerError(errors, "Invalid input in getChangeByTicker", "httpParams");
     return next(new HttpError("Invalid input", 422));
   }
 
