@@ -79,7 +79,7 @@ function ASTSNavbar() {
         <Navbar.Collapse id="navbar-fund-drop">
           <Nav>
             <NavDropdown id="nav-fund-drop" title="Funds" menuVariant="dark">
-              {setFundsLoaded && !isLoading && fundNav}
+              {fundsLoaded && !isLoading && fundNav}
             </NavDropdown>
           </Nav>
         </Navbar.Collapse>

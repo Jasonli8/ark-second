@@ -12,10 +12,14 @@ import AccordionUnit from "./AccordionUnit";
 ///////////////////////////////////////////////////////////////////////////////////
 
 const percentageFix = (x) => {
-  return Number.parseFloat(x).toFixed(2);
+  return Number(x).toFixed(2);
 };
-const priceFix = (x) => {
-  return Number.parseFloat(x).toFixed(2);
+const priceFix = (x, currency) => {
+  const formatter = new Intl.NumberFormat(undefined, {
+    style: 'currency',
+    currency: currency || 'USD',
+  });
+  return formatter.format(x);
 };
 
 function TickerAccordion(props) {

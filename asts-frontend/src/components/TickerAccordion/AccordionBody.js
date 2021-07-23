@@ -41,21 +41,14 @@ function AccordionBody(props) {
                     <p className="ml-3">
                       {!!holdingData ? holdingData.shares : defaultStat}
                     </p>
-                    <p
-                      className={`ml-3 ${
-                        !!holdingData &&
-                        (holdingData.sharesDifference < 0
-                          ? "text-danger"
-                          : "text-success")
-                      }`}
-                    >
+                    <p className={`ml-3`}>
                       {!!holdingData &&
                         !!holdingData.sharesDifference &&
                         holdingData.sharesDifference > 0 &&
                         "+"}
-                      {!!holdingData &&
-                        !!holdingData.sharesDifference &&
-                        holdingData.sharesDifference}
+                      {!!holdingData && !!holdingData.sharesDifference
+                        ? holdingData.sharesDifference
+                        : defaultStat}
                     </p>
                   </li>
                   <li>
@@ -77,9 +70,9 @@ function AccordionBody(props) {
                         !!holdingData.marketValueDifference &&
                         holdingData.marketValueDifference > 0 &&
                         "+"}
-                      {!!holdingData &&
-                        !!holdingData.marketValueDifference &&
-                        priceFix(holdingData.marketValueDifference)}
+                      {!!holdingData && !!holdingData.marketValueDifference
+                        ? priceFix(holdingData.marketValueDifference)
+                        : defaultStat}
                     </p>
                   </li>
                   <li>
@@ -95,7 +88,7 @@ function AccordionBody(props) {
                   <li>
                     <h5>Current price: </h5>
                     <p className="ml-3">
-                      {!!priceData
+                      {!!priceData && !!priceData.currencySymbol
                         ? priceFix(priceData.regularMarketPrice)
                         : defaultStat}
                     </p>

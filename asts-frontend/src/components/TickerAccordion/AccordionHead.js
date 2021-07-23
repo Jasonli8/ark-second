@@ -38,13 +38,14 @@ function AccordionBody(props) {
           </div>
           <div className="col-3">
             <h5>{!!holdingData ? holdingData.shares : defaultStats}</h5>
-            <p>{!!holdingData ? holdingData.sharesDifference : defaultStats}</p>
+            <p>{(!!holdingData && holdingData.sharesDifference > 0) && '+'}{!!holdingData ? holdingData.sharesDifference : defaultStats}</p>
           </div>
           <div className="col-3">
-            <h5>{!!holdingData ? holdingData.marketValue : defaultStats}</h5>
+            <h5>{!!holdingData ? ("$" + holdingData.marketValue) : defaultStats}</h5>
             <p className={`${(!!holdingData && holdingData.marketValueDifference < 0) ? 'text-danger' : 'text-success'}`}>
+              {(!!holdingData && holdingData.marketValueDifference > 0) && '+'}
               {!!holdingData
-                ? priceFix(holdingData.marketValueDifference)
+                ? (priceFix(holdingData.marketValueDifference))
                 : defaultStats}
             </p>
           </div>
