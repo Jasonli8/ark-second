@@ -4,6 +4,7 @@ import { Form, Button, Spinner } from "react-bootstrap";
 ///////////////////////////////////////////////////////////////////////////////////
 
 import ContentContainer from "../../components/ContentContainer/ContentContainer";
+import LoadingSpinner from '../../components/Loading/LoadingSpinner'
 import { AuthContext } from "../../contexts/auth-context";
 import { useHttpClient } from "../../helpers/hooks/http-hook";
 
@@ -46,7 +47,7 @@ function Login() {
   return (
     <>
       {isLoading ? (
-        <Spinner animation="grow" />
+        <LoadingSpinner />
       ) : (
         <ContentContainer addClass="mt-5 p-3 text-light">
           <Form onSubmit={authSubmitHandler}>
