@@ -1,5 +1,5 @@
 const express = require("express");
-const { body } = require("express-validator");
+const { body, query } = require("express-validator");
 
 const router = express.Router();
 
@@ -45,7 +45,7 @@ router.post(
 // retrieves the specified user's security question
 router.get(
   "/recovery/password",
-  body("user").isLength({ min: 1 }),
+  query("user").isLength({ min: 1 }),
   userController.passwordRecovery
 );
 

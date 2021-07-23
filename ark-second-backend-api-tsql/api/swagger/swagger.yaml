@@ -581,19 +581,13 @@ paths:
   
   
   /user/recovery/password:
-    post:
+    get:
       summary: Retrieves the specified user's security question
       parameters:
-        - in: body
-          name: user
-          description: User for password recovery.
-          schema:
-            type: object
-            required: 
-              - user
-            properties:
-              user:
-                type: string
+        - name: user
+          in: query
+          required: true
+          type: string
       responses:
         '200':
           description: Data is retrieved successfully.

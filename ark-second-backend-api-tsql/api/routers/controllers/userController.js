@@ -298,7 +298,8 @@ const passwordRecovery = async (req, res, next) => {
     loggerError(errors, "Invalid input in passwordRecovery", "httpParams");
     return next(new HttpError("Invalid input", 422));
   }
-  const { user } = req.body;
+  const { user } = req.query;
+  console.log(user);
 
   let result;
   try {
@@ -312,10 +313,11 @@ const passwordRecovery = async (req, res, next) => {
     );
     return next(new HttpError("Something went wrong. Try again later", 500));
   }
-  if (!result[1].recordsets[0][0].question) {
+  console.log(result)
+  if (!result[1].recordsets[0][0]) {
     return next(new HttpError("No such user exists", 404));
   }
-  res.status(200).json(result[1].recordsets[0][0].question);
+  res.status(200).json({question : result[1].recordsets[0][0].question});
 };
 
 // passwordRecoveryComfirmation(string user, string answer) checks whether the answer matches the user's answer for their security question
