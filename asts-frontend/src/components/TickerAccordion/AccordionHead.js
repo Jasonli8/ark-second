@@ -16,7 +16,7 @@ function AccordionBody(props) {
 
   return (
     <Accordion.Toggle
-      as={Card.Header}
+      as={Card.Body}
       style={{
         background: "white",
         "min-height": "60px",

@@ -10,13 +10,12 @@ import { AuthContext } from "../../contexts/auth-context";
 ///////////////////////////////////////////////////////////////////////////////////
 
 function AccordionUnit(props) {
-  const { eventKey, percentageFix, priceFix, companyInfo } = props;
-  const { fundName, ticker, companyId } = companyInfo;
+  const { eventKey, percentageFix, priceFix, holdingData } = props;
+  const { fundName, ticker, companyId } = holdingData;
   const auth = useContext(AuthContext);
   const { isLoading, error, errorDetails, sendRequest, clearError } =
     useHttpClient();
   const [priceData, setPriceData] = useState();
-  const [holdingData, setHoldingData] = useState({});
 
   const getPrice = async () => {
     try {
@@ -28,7 +27,6 @@ function AccordionUnit(props) {
           Authorization: "Bearer " + auth.token,
         }
       );
-      console.log(data);
       if (!!data && !!data.price) {
         setPriceData(data.price);
       }
@@ -37,27 +35,7 @@ function AccordionUnit(props) {
     }
   };
 
-  const getHolding = async () => {
-    try {
-      console.log(companyInfo);
-      console.log(companyId);
-      const data = await sendRequest(
-        `http://localhost:5000/api/db/funds/recent?fundType=${fundName}&companyId=${companyId}`,
-        "GET",
-        null,
-        {
-          Authorization: "Bearer " + auth.token,
-        }
-      );
-      console.log(data[0][0]);
-      setHoldingData(data[0][0]);
-    } catch (err) {
-      throw new Error(err);
-    }
-  };
-
   const headerClickHandler = async () => {
-      console.log(ticker + " header clicked")
     try {
       if (!priceData) {
         await getPrice();
@@ -67,18 +45,6 @@ function AccordionUnit(props) {
     }
   };
 
-  useEffect(() => {
-    const loadHeaderData = async () => {
-      console.log("Loading header data: " + ticker);
-      try {
-        await getHolding();
-      } catch (err) {
-        console.log(err);
-      }
-    };
-    loadHeaderData();
-  }, [sendRequest]);
-
   return (
     <>
       <AccordionHead
@@ -86,14 +52,14 @@ function AccordionUnit(props) {
         eventKey={eventKey}
         percentageFix={percentageFix}
         priceFix={priceFix}
-        companyInfo={companyInfo}
+        companyInfo={holdingData}
         holdingData={holdingData}
       />
       <AccordionBody
         eventKey={eventKey}
         percentageFix={percentageFix}
         priceFix={priceFix}
-        companyInfo={companyInfo}
+        companyInfo={holdingData}
         holdingData={holdingData}
         priceData={priceData}
         isLoading={isLoading}
