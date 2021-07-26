@@ -4,7 +4,7 @@ import './ContentContainer.css'
 function ContentContainerHeader(props) {
     return (
         <>
-        <span className={`content-header ${props.addClass}`} style={{
+        <span className={`${props.sub ? 'sub-header-secondary' : 'content-header'} ${props.addClass}`} style={{
             position: "absolute",
             display: "flex",
             height: props.height,

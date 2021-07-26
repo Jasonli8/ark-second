@@ -40,7 +40,7 @@ function Ticker() {
           </a>
         </ContentContainerHeader>
       </nav>
-      <div className="tab-content">
+      <div className="tab-content" style={{minHeight: "700px"}}>
         <div
           className="tab-pane fade show active"
         >
