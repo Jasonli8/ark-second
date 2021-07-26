@@ -7,6 +7,7 @@ import ArkStat from "../../components/stats/ArkStat";
 import MarketStat from "../../components/stats/MarketStat";
 import ContentContainer from "../../components/ContentContainer/ContentContainer";
 import ContentContainerHeader from "../../components/ContentContainer/ContentContainerHeader";
+import DataStat from "../../components/stats/DataStat";
 
 ///////////////////////////////////////////////////////////////////////////////////
 
@@ -15,18 +16,16 @@ function Ticker() {
   const [selectedTab, setSelectedTab] = useState('holding');
 
   const selectHistory = () => {
-    console.log('history');
     setSelectedTab('history');
   }
   const selectHolding = () => {
-    console.log('holding');
     setSelectedTab('holding');
   }
 
   return (
     <ContentContainer>
-      <nav style={{background: '#695E97'}}>
-        <ContentContainerHeader addClass="nav nav-tabs">
+      <nav>
+        <ContentContainerHeader addClass="nav nav-tabs" height="60px">
           <a
             className={`nav-item nav-link ${selectedTab === 'holding' ? 'active' : 'text-light'}`}
             onClick={selectHolding}
@@ -48,6 +47,7 @@ function Ticker() {
           {selectedTab === 'holding' ? <ArkStat ticker={ticker} /> : <MarketStat ticker={ticker} />}
         </div>
       </div>
+      <DataStat ticker={ticker} />
     </ContentContainer>
   );
 }

@@ -50,7 +50,7 @@ function Fund() {
   return (
     <>
       <ContentContainer>
-        <ContentContainerHeader>
+        <ContentContainerHeader height="60px">
           <div className="container">
             <div className="row">
               <div className="col-9">

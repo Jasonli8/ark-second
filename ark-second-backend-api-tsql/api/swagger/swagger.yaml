@@ -284,6 +284,10 @@ paths:
                   type: string
                 date:
                   type: string
+                shares:
+                  type: number
+                marketValue:
+                  type: number
                 sharesDifference:
                   type: number
                 marketValueDifference:

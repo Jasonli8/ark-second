@@ -231,13 +231,13 @@ const getChangeByTicker = async (req, res, next) => {
 
   const query =
     `WITH All_Holding([companyId],[companyName],[ticker],[cusip],[date],[shares],[marketValue]) AS (SELECT [companyId],[companyName],[ticker],[cusip],[date],SUM([shares]) AS [shares],SUM([marketValue]) AS [marketValue] FROM [Shares].[Company] AS [c] JOIN [Shares].[Holding] AS [h] ON [h].[companyId] = [c].[Id] WHERE [date] BETWEEN '${formattedFromDate}' AND '${formattedToDate}' AND [ticker] = '${ticker}' GROUP BY [companyId],[companyName],[ticker],[cusip],[date]) ` +
-    `SELECT [companyId],[companyName],[ticker],[cusip],[date], ([shares] - LAG([shares], 1) OVER(ORDER BY [date])) AS [sharesDifference], ([marketValue] - LAG([marketValue], 1) OVER(ORDER BY [date])) AS [marketValueDifference] FROM All_Holding ORDER BY [date], [fundName] ASC`;
+    `SELECT [companyId],[companyName],[ticker],[cusip],[date],[shares],[marketValue], ([shares] - LAG([shares], 1) OVER(ORDER BY [date])) AS [sharesDifference], ([marketValue] - LAG([marketValue], 1) OVER(ORDER BY [date])) AS [marketValueDifference] FROM All_Holding ORDER BY [date] DESC`;
   queryDB(query)
     .then((result) => {
       if (result[0] === 200) {
         res.status(200).json(result[1].recordsets[0]);
       } else {
-        console.log("error 1"); // console.log
+        console.log(result);
         return next(new HttpError("Something went wrong.", result[0]));
       }
     })
