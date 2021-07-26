@@ -122,7 +122,6 @@ function AccordionBody(props) {
                     <p className="ml-3">{priceDate}</p>
                   </li>
                 </ul>
-                {holdingData.ticker !== ""}
                 <div className="d-flex justify-content-end">
                   <Button
                     href={`/history/${holdingData.ticker}`}
