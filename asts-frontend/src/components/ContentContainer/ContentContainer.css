@@ -11,9 +11,9 @@
 
 .content-header {
   display: flex;
-  background-color: #695E97;
+  background-color: #1C1245;
   margin-bottom: 10px;
-  padding: 10px;
+  padding: 10px 10px 0px 10px;
   width: 100%;
   filter: drop-shadow(0px 0px 5px rgba(0, 0, 0, 0.2));
   line-height: 25px;
@@ -30,6 +30,17 @@
   font-size: 15px;
   color: #C4C4C4;
   margin-left: 20px;
+}
+
+.content-secondary {
+  display: flex;
+  background-color: #695E97;
+  margin-bottom: 10px;
+  padding: 10px 10px 0px 10px;
+  width: 100%;
+  filter: drop-shadow(0px 0px 5px rgba(0, 0, 0, 0.2));
+  line-height: 25px;
+  vertical-align: text-bottom;
 }
 
 @media (max-width: 960px) {

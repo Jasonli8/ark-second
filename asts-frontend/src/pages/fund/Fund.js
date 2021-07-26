@@ -61,7 +61,7 @@ function Fund() {
               <div className="col-3">
                 <Dropdown>
                   <Dropdown.Toggle variant="light">
-                    Select period
+                    Sort by
                   </Dropdown.Toggle>
                   <Dropdown.Menu>
                     <Dropdown.Item
