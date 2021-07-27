@@ -10,7 +10,7 @@ const checkTicker = async (ticker) => {
     const result = await queryDB(query1);
     let tickerIsValid = false;
     result[1].recordset.forEach(function (company) {
-      if (company.ticker == ticker) {
+      if (company.ticker === ticker) {
         tickerIsValid = true;
       }
     });

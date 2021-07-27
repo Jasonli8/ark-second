@@ -28,13 +28,10 @@ const getHistory = async (req, res, next) => {
 
   let formattedFromDate;
   let formattedToDate;
-  console.log(fromDate);
-  console.log(toDate);
   try {
     formattedFromDate = await checkDate(fromDate);
     formattedToDate = await checkDate(toDate);
     await checkTicker(ticker);
-    console.log("tryna fetch");
     yahooFinance.historical(
       {
         symbol: `${ticker}`,
