@@ -179,7 +179,7 @@ const getFundHoldingByTicker = async (req, res, next) => {
     });
     formattedFromDate = await checkDate(fromDate);
     formattedToDate = await checkDate(toDate);
-    await checkTicker;
+    await checkTicker();
   } catch (err) {
     return next(new HttpError("Something went wrong", 500));
   }
@@ -224,7 +224,7 @@ const getChangeByTicker = async (req, res, next) => {
   try {
     formattedFromDate = await checkDate(fromDate);
     formattedToDate = await checkDate(toDate);
-    await checkTicker;
+    await checkTicker();
   } catch (err) {
     return next(new HttpError("Something went wrong", 500));
   }

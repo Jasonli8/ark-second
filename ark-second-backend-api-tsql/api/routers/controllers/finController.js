@@ -28,15 +28,13 @@ const getHistory = async (req, res, next) => {
 
   let formattedFromDate;
   let formattedToDate;
+  console.log(fromDate);
+  console.log(toDate);
   try {
     formattedFromDate = await checkDate(fromDate);
     formattedToDate = await checkDate(toDate);
-    await checkTicker;
-  } catch (err) {
-    return next(new HttpError("Dates are invalid", 400));
-  }
-
-  try { 
+    await checkTicker(ticker);
+    console.log("tryna fetch");
     yahooFinance.historical(
       {
         symbol: `${ticker}`,
@@ -48,23 +46,21 @@ const getHistory = async (req, res, next) => {
         if (err) {
           loggerError(
             err.message,
-            "Failed to get history of quotes in finController",
+            `Failed to retrieve historical yahoo data for ${ticker} from ${formattedFromDate} to ${formattedToDate} with period ${period}.`,
             "finReq"
           );
-          return next(
-            new HttpError("Something went wrong. Couldn't get data.", 500)
-          );
+          return process.nextTick(() => {
+            next(err);
+          });
         }
         res.status(200).json(quotes);
       }
     );
   } catch (err) {
-    loggerError(
-      err.message,
-      `Failed to retrieve historical yahoo data for ${ticker} from ${formattedFromDate} to ${formattedToDate} with period ${period}.`,
-      "finReq"
-    );
-    return next(new HttpError("Something went wrong", 500));
+    console.log(err);
+    return process.nextTick(() => {
+      next(err);
+    });
   }
 };
 
@@ -79,13 +75,8 @@ const getQuote = async (req, res, next) => {
   const { ticker } = req.query;
 
   try {
-    await checkTicker;
-  } catch (err) {
-    return next(new HttpError("Something went wrong", 500));
-  }
-
-  try {
-    await yahooFinance.quote(
+    await checkTicker(ticker);
+    yahooFinance.quote(
       {
         symbol: `${ticker}`,
         modules: ["price"],
@@ -94,23 +85,27 @@ const getQuote = async (req, res, next) => {
         if (err) {
           loggerError(
             err.message,
-            "Failed to get quote in finController",
+            `Failed to get quote in finController for ${ticker}`,
             "finReq"
           );
-          console.log(ticker);
-          throw new HttpError(`Something went wrong. Couldn't get data for ${ticker}`, 400);
+          return process.nextTick(() => {
+            next(
+              new HttpError(
+                `Something went wrong. Couldn't get data for ${ticker}`,
+                400
+              )
+            );
+          });
         }
 
         res.status(200).json(snapshot);
       }
     );
   } catch (err) {
-    loggerError(
-      err.message,
-      `Failed to retrieve quote yahoo data for ${ticker}.`,
-      "finReq"
-    );
-    return next(new HttpError("Something went wrong", 500));
+    console.log(err);
+    return process.nextTick(() => {
+      next(err);
+    });
   }
 };
 
