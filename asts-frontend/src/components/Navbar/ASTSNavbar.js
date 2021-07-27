@@ -30,7 +30,8 @@ function ASTSNavbar() {
   const searchSubmitHandler = (event) => {
     console.log("submitted");
     console.log(event.search);
-    window.location.href = `http://localhost:3000/history/${event.search}`;
+    const ticker = event.search.toUpperCase();
+    window.location.href = `http://localhost:3000/history/${ticker}`;
   };
 
   ///////////////////////////////////////////////////////////////////////////////////
