@@ -51,7 +51,7 @@ router.get(
 
 // checks whether the answer matches the user's answer for their security question
 router.post(
-  "./recover/passwordConfirm",
+  "/recovery/passwordConfirm",
   body("user").isLength({ min: 1 }),
   body("answer").isLength({ min: 1 }),
   userController.passwordRecoveryConfirmation

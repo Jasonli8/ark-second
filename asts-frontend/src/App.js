@@ -11,9 +11,12 @@ import {
 import { AuthContext } from "./contexts/auth-context";
 import Login from "./pages/login/Login";
 import Signup from "./pages/signup/Signup";
-import Fund from './pages/fund/Fund'
+import Fund from "./pages/fund/Fund";
 import Ticker from "./pages/ticker/Ticker";
-import Test from './pages/test/test'
+import UserRecovery from "./pages/recovery/user/UserRecovery";
+import PasswordRecovery from "./pages/recovery/password/PasswordRecovery";
+import UpdatePassword from "./pages/recovery/password/UpdatePassword";
+import Test from "./pages/test/test";
 import ASTSNavbar from "./components/Navbar/ASTSNavbar";
 
 ///////////////////////////////////////////////////////////////////////////////////
@@ -139,6 +142,9 @@ function App() {
                   <Route path="/" exact>
                     <Test />
                   </Route>
+                  <Route path="/update-password" exact>
+                    <UpdatePassword />
+                  </Route>
                   <Route path="/history/:ticker" exact>
                     <Ticker />
                   </Route>
@@ -161,6 +167,12 @@ function App() {
                 </Route>
                 <Route path="/signup" exact>
                   <Signup />
+                </Route>
+                <Route path="/recovery/user" exact>
+                  <UserRecovery />
+                </Route>
+                <Route path="/recovery/password" exact>
+                  <PasswordRecovery />
                 </Route>
                 <Route>
                   <Redirect to="/login" />

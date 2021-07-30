@@ -44,19 +44,19 @@ function Signup() {
   }, [sendRequest]);
 
   const signupSubmitHandler = async (event) => {
-    event.preventDefault();
     try {
+      console.log(event);
       const responseData = await sendRequest(
         "http://localhost:5000/user/signup",
         "POST",
         JSON.stringify({
-          user: event.currentTarget.userName.value,
-          firstName: event.currentTarget.firstName.value,
-          lastName: event.currentTarget.lastName.value,
-          email: event.currentTarget.email.value,
-          password: event.currentTarget.password.value,
-          question: event.currentTarget.securityQuestion.value,
-          answer: event.currentTarget.answer.value,
+          user: event.userName,
+          firstName: event.firstName,
+          lastName: event.lastName,
+          email: event.email,
+          password: event.password,
+          question: event.securityQuestion,
+          answer: event.answer,
         }),
         {
           "Content-Type": "application/json",

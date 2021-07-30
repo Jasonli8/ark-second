@@ -1,4 +1,6 @@
 TODO -
-error handling for authentication (separating http error from credential errors)
-Fund page error, fin data on obscure tickers break backend and frontend
-Stop backend from crashing on unknown tickers in finReq
+user recovery
+password recovery
+relocate logout button
+home page
+beautify error pages

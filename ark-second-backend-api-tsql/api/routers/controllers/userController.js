@@ -7,7 +7,10 @@ const { validationResult } = require("express-validator");
 
 const queryDB = require("../../../components/helpers/queryDB");
 const HttpError = require("../../../components/models/http-error");
-const { loggerError, loggerInfo } = require("../../../components/helpers/logger");
+const {
+  loggerError,
+  loggerInfo,
+} = require("../../../components/helpers/logger");
 
 ////////////////////////////////////////////////////////////////
 
@@ -43,65 +46,29 @@ const signup = async (req, res, next) => {
     req.body;
   try {
     const query1 = `SELECT * FROM [User].[User] WHERE [userName] = '${user}'`;
-    const result = await queryDB(query1);
-    if (result[1].recordset[0]) {
-      res
-        .status(400)
-        .json({ message: "A user with the chosen username already exists" });
+    const result1 = await queryDB(query1);
+    if (result1[1].recordset[0]) {
+      throw new HttpError(
+        "A user with the chosen username already exists",
+        400
+      );
     }
-  } catch (err) {
-    loggerError(
-      err.message,
-      "Error in signup, checking for existing users",
-      "auth"
-    );
-    return next(
-      new HttpError(
-        "Something went wrong. Failed to create user. Try again later.",
-        500
-      )
-    );
-  }
 
-  let questionId;
-  try {
+    let questionId;
     const query2 = `SELECT * FROM [User].[SecurityQuestion] WHERE [question] = '${question}'`;
-    let result = await queryDB(query2);
-    if (!result[1].recordsets[0][0]) {
+    let result2 = await queryDB(query2);
+    if (!result2[1].recordsets[0][0]) {
       const query3 = `INSERT INTO [User].[SecurityQuestion] ([question]) VALUES(${question})`;
       await queryDB(query3);
       result = await queryDB(query2);
     }
-    questionId = result[1].recordsets[0][0].Id;
-  } catch (err) {
-    return next(
-      new HttpError(
-        "Something went wrong. Failed to create user. Try again later.",
-        500
-      )
-    );
-  }
+    questionId = result2[1].recordsets[0][0].Id;
 
-  let hashedPass;
-  let hashedAnswer;
-  try {
+    let hashedPass;
+    let hashedAnswer;
     hashedPass = await bcrypt.hash(password, 12);
     hashedAnswer = await bcrypt.hash(answer, 12);
-  } catch (err) {
-    loggerError(
-      err.message,
-      "Error in signup, hashing password and security question answer",
-      "auth"
-    );
-    return next(
-      new HttpError(
-        "Something went wrong. Failed to create user. Try again later.",
-        500
-      )
-    );
-  }
 
-  try {
     const query4 =
       `BEGIN TRAN T1 ` +
       `INSERT INTO [User].[User] ([userName],[firstName],[lastName],[email],[password]) ` +
@@ -110,56 +77,28 @@ const signup = async (req, res, next) => {
       `SELECT [Id], ${questionId}, '${hashedAnswer}' FROM [User].[User] WHERE [userName] = '${user}' ` +
       `COMMIT TRAN T1`;
     await queryDB(query4);
-  } catch (err) {
-    loggerError(err.message, "Error in signup, creating user", "auth");
-    return next(
-      new HttpError(
+
+    const query5 = `SELECT * FROM [User].[User] WHERE [userName] = '${user}'`;
+    const result = await queryDB(query5);
+    if (!result[1].recordset[0]) {
+      throw new HttpError(
         "Something went wrong. Failed to create user. Try again later.",
         500
-      )
-    );
-  }
-  try {
-    const query5 = `SELECT * FROM [User].[User] WHERE [userName] = '${user}'`
-    const result = await queryDB(query5);
-    console.log(result);
-    if(!result[1].recordset[0]) {
-      loggerError(err.message, "Error in signup, creating user", "auth");
-      return next(
-        new HttpError(
-          "Something went wrong. Failed to create user. Try again later.",
-          500
-        )
       );
     }
-  } catch (err) {
-    loggerError(err.message, "Error in signup, checking user creation user", "auth");
-    return next(
-      new HttpError(
-        "Something went wrong. Try again later.",
-        500
-      )
-    );
-  }
 
-  let token;
-  try {
+    let token;
     token = await jwt.sign(
       { user: user, firstName: firstName, lastName: lastName, email: email },
       process.env.EN_KEY,
       { expiresIn: "1h" }
     );
-  } catch (err) {
-    loggerError(err.message, "Error in signup, creating token", "auth");
-    return next(
-      new HttpError(
-        "Something went wrong. User created but failed to log in. Try to log in later.",
-        500
-      )
-    );
-  }
 
-  res.status(201).json({ user, firstName, lastName, token });
+    res.status(201).json({ user, firstName, lastName, token });
+  } catch (err) {
+    loggerError(err.message, "Error in signup", "auth");
+    return next(err);
+  }
 };
 
 // login(string user, string password) checks user credentials to authenticate
@@ -246,7 +185,6 @@ const login = async (req, res, next) => {
 
 // userRecovery(string email) sends an email to the specified email with the associated username attached
 const userRecovery = async (req, res, next) => {
-  // to fix
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     loggerError(errors, "Invalid input in userRecovery", "httpParams");
@@ -255,40 +193,49 @@ const userRecovery = async (req, res, next) => {
 
   let result;
   try {
-    const query = `SELECT [userName] FROM [User].[User] WHERE [email] = ${req.body.email}`;
+    const query = `SELECT [userName] FROM [User].[User] WHERE [email] = '${req.body.email}'`;
     result = await queryDB(query);
+    if (!result[1].recordsets[0][0]) {
+      throw new HttpError("Email has no such user", 404);
+    }
+
+    async function sendEmail() {
+      // create reusable transporter object using the default SMTP transport
+      let transporter = nodemailer.createTransport({
+        host: "smtp.gmail.com",
+        port: 587,
+        secure: false, // true for 465, false for other ports
+        auth: {
+          user: "arksecondapp@gmail.com",
+          pass: "arksecond123",
+        },
+        tsl: {
+          // for local hosting
+          rejectUnauthorized: false,
+        },
+      });
+      console.log(transporter);
+
+      // send mail with defined transport object
+      let info = await transporter.sendMail({
+        from: '"ArkSecond" <donotreply@arksecond.com>',
+        to: "arksecondapp@gmail.com", //req.body.email
+        subject: "Username Recovery",
+        text: `Your username is: ${result[1].recordsets[0][0].userName}`,
+      });
+
+      if (info.rejected[0]) {
+        throw new HttpError("Email could not be sent", 500);
+      }
+    }
+    await sendEmail();
+
+    res.status(200).json({});
   } catch (err) {
-    loggerError(
-      err.message,
-      "Error in recovery, failed to search for users",
-      "auth"
-    );
-    return next(new HttpError("Something went wrong. Try again later", 500));
+    console.log(err);
+    loggerError(err.message, "Error in username recovery.", "auth");
+    return next(err);
   }
-  if (!result[1].recordsets[0][0].userName) {
-    return next(new HttpError("Email has no such user", 404));
-  }
-
-  let account = await nodemailer.createTestAccount();
-
-  let transporter = nodemailer.createTransport({
-    host: "smtp.ethereal.email",
-    port: 587,
-    secure: false,
-    auth: {
-      user: account.user,
-      pass: account.pass,
-    },
-  });
-
-  let info = await transporter.sendMail({
-    from: '"ArkSecond" <donotreply@arksecond.com>',
-    to: req.body.email,
-    subject: "Username Recovery",
-    text: `Your username is: ${result[1].recordsets[0][0].userName}`,
-  });
-
-  res.status(200);
 };
 
 // passwordRecovery(string user) retrieves the specified user's security question
@@ -313,18 +260,22 @@ const passwordRecovery = async (req, res, next) => {
     );
     return next(new HttpError("Something went wrong. Try again later", 500));
   }
-  console.log(result)
+  console.log(result);
   if (!result[1].recordsets[0][0]) {
     return next(new HttpError("No such user exists", 404));
   }
-  res.status(200).json({question : result[1].recordsets[0][0].question});
+  res.status(200).json({ question: result[1].recordsets[0][0].question });
 };
 
 // passwordRecoveryComfirmation(string user, string answer) checks whether the answer matches the user's answer for their security question
 const passwordRecoveryConfirmation = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    loggerError(errors, "Invalid input in passwordRecoveryConfirmation", "httpParams");
+    loggerError(
+      errors,
+      "Invalid input in passwordRecoveryConfirmation",
+      "httpParams"
+    );
     return next(new HttpError("Invalid input", 422));
   }
   const { user, answer } = req.body;
@@ -427,31 +378,14 @@ const updatePassword = async (req, res, next) => {
   let hashedPass;
   try {
     hashedPass = await bcrypt.hash(password, 12);
+    console.log(hashedPass);
+    const query = `UPDATE [User].[User] SET [password] = '${hashedPass}' WHERE [userName] = '${user}'`;
+    const response = await queryDB(query);
+    console.log(response);
+    res.status(200).json({});
   } catch (err) {
-    loggerError(
-      err.message,
-      "Error in updating password, hashing password",
-      "auth"
-    );
-    return next(
-      new HttpError(
-        "Something went wrong. Failed to create user. Try again later.",
-        500
-      )
-    );
-  }
-
-  try {
-    const query = `UPDATE [User].[User] SET [password] = ${hashedPass} WHERE [userName] = '${user}'`;
-    queryDB(query);
-    res.status(200);
-  } catch (err) {
-    return next(
-      new HttpError(
-        "Something went wrong. Failed to update password. Try again later.",
-        500
-      )
-    );
+    loggerError(err.message, "Error in updating password", "auth");
+    return next(err);
   }
 };
 

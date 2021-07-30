@@ -4,7 +4,7 @@ import { Form, Button, Spinner } from "react-bootstrap";
 ///////////////////////////////////////////////////////////////////////////////////
 
 import ContentContainer from "../../components/ContentContainer/ContentContainer";
-import LoadingSpinner from '../../components/Loading/LoadingSpinner'
+import LoadingSpinner from "../../components/Loading/LoadingSpinner";
 import { AuthContext } from "../../contexts/auth-context";
 import { useHttpClient } from "../../helpers/hooks/http-hook";
 
@@ -20,17 +20,19 @@ function Login() {
     console.log(event.currentTarget.userName.value);
     console.log(event.currentTarget.password.value);
     try {
-      const responseData = JSON.parse(await sendRequest(
-        "http://localhost:5000/user/login",
-        "POST",
-        JSON.stringify({
-          user: event.currentTarget.userName.value,
-          password: event.currentTarget.password.value,
-        }),
-        {
-          "Content-Type": "application/json",
-        }
-      ));
+      const responseData = JSON.parse(
+        await sendRequest(
+          "http://localhost:5000/user/login",
+          "POST",
+          JSON.stringify({
+            user: event.currentTarget.userName.value,
+            password: event.currentTarget.password.value,
+          }),
+          {
+            "Content-Type": "application/json",
+          }
+        )
+      );
 
       auth.login(
         responseData.user,
@@ -59,8 +61,17 @@ function Login() {
               <Form.Control type="password" placeholder="Password" />
             </Form.Group>
             <Button type="submit">Login</Button>
-            <Button variant="secondary" href="/signup" className="ml-3">Create an account</Button>
+            <Button variant="secondary" href="/signup" className="ml-3">
+              Create an account
+            </Button>
           </Form>
+          <br />
+          <div>
+            <a href="http://localhost:3000/recovery/user">Forgot username?</a> <br />
+            <a href="http://localhost:3000/recovery/password">
+              Forgot password?
+            </a>
+          </div>
         </ContentContainer>
       )}
     </>

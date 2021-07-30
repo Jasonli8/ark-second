@@ -32,6 +32,9 @@ const getHistory = async (req, res, next) => {
     formattedFromDate = await checkDate(fromDate);
     formattedToDate = await checkDate(toDate);
     await checkTicker(ticker);
+    if (ticker === null || ticker === "") {
+      throw new HttpError(`No data found for ${ticker}`, 404);
+    }
     yahooFinance.historical(
       {
         symbol: `${ticker}`,
@@ -73,6 +76,9 @@ const getQuote = async (req, res, next) => {
 
   try {
     await checkTicker(ticker);
+    if (ticker === null || ticker === "") {
+      throw new HttpError(`No data found for ${ticker}`, 404);
+    }
     yahooFinance.quote(
       {
         symbol: `${ticker}`,
