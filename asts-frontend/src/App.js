@@ -17,7 +17,7 @@ import Ticker from "./pages/ticker/Ticker";
 import UserRecovery from "./pages/recovery/user/UserRecovery";
 import PasswordRecovery from "./pages/recovery/password/PasswordRecovery";
 import UpdatePassword from "./pages/recovery/password/UpdatePassword";
-import Test from "./pages/test/test";
+import Footer from './components/Footer/Footer'
 import ASTSNavbar from "./components/Navbar/ASTSNavbar";
 
 ///////////////////////////////////////////////////////////////////////////////////
@@ -156,10 +156,7 @@ function App() {
                     <Redirect to="/" />
                   </Route>
                 </Switch>
-                <button onClick={logout}>Logout</button>
-                <footer>
-                  This is placeholder text for what goes inside the footer
-                </footer>
+                <Footer />
               </>
             ) : (
               <Switch>

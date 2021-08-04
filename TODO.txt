@@ -1,4 +1,2 @@
 TODO -
-relocate logout button
-home page
-beautify error pages
+DEPLOY

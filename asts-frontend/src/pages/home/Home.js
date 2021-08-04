@@ -107,7 +107,7 @@ function Home() {
           </p>
           <Button
             href="https://ark-invest.com/"
-            className="p-3"
+            className="p-3 btn btn-secondary"
             style={{ backgroundColor: "#443c66" }}
           >
             Check Out Official Site
