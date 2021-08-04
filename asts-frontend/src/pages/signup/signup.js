@@ -21,7 +21,7 @@ function Signup() {
     handleSubmit,
     formState: { errors },
   } = useForm();
-  const { isLoading, error, errorDetails, sendRequest, clearError } =
+  const { isLoading, error, errorDetails, errorCode, errorMessage, sendRequest, clearError } =
     useHttpClient();
   const [questionsLoaded, setQuestionsLoaded] = useState(false);
 
@@ -77,12 +77,13 @@ function Signup() {
 
   return (
     <>
-      {!error && isLoading ? (
+      {isLoading ? (
         <LoadingSpinner />
       ) : (
         <ContentContainer addClass="mt-5 p-3 text-light">
           <Form onSubmit={handleSubmit(signupSubmitHandler)}>
             <h1>Signup</h1>
+            {!!error && <p className="text-danger">{errorMessage}</p>}
             <Form.Group controlId="userName">
               <Form.Label>Username</Form.Label>
               <Form.Control

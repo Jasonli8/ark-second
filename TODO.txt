@@ -1,6 +1,4 @@
 TODO -
-user recovery
-password recovery
 relocate logout button
 home page
 beautify error pages

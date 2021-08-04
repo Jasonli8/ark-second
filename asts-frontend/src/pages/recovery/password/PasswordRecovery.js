@@ -13,7 +13,7 @@ import { useHttpClient } from "../../../helpers/hooks/http-hook";
 
 function UserRecovery() {
   const auth = useContext(AuthContext);
-  const { isLoading, error, errorDetails, sendRequest, clearError } =
+  const { isLoading, error, errorDetails, errorCode, errorMessage, sendRequest, clearError } =
     useHttpClient();
   const [user, setUser] = useState();
   const [question, setQuestion] = useState();
@@ -31,6 +31,7 @@ function UserRecovery() {
         }
       );
       console.log(response);
+      clearError();
       setUser(user);
       setQuestion(response.question);
     } catch (err) {
@@ -71,53 +72,52 @@ function UserRecovery() {
 
   return (
     <ContentContainer addClass="mt-5 p-3 text-light">
-      {error ? (
-        <ErrorNotif error={error} errorDetails={errorDetails} />
-      ) : (
-        <>
-          {isLoading ? (
-            <LoadingSpinner />
-          ) : (
-            <>
-              <Form onSubmit={userSubmitHandler}>
-                <h1>Enter you username</h1>
-                <Form.Group controlId="username">
-                  <Form.Control
-                    type="input"
-                    placeholder="Username"
-                    value={user}
-                    disabled={!!user}
-                  />
-                </Form.Group>
-                <Button type="submit" disabled={!!question}>
-                  Confirm
+      <>
+        {isLoading ? (
+          <LoadingSpinner />
+        ) : (
+          <>
+            <Form onSubmit={userSubmitHandler}>
+              <h1>Enter you username</h1>
+              {!!error && !question && <p className="text-danger">{errorMessage}</p>}
+              <Form.Group controlId="username">
+                <Form.Control
+                  type="input"
+                  placeholder="Username"
+                  value={user}
+                  disabled={!!user}
+                />
+              </Form.Group>
+              <Button type="submit" disabled={!!question}>
+                Confirm
+              </Button>
+              {!question && (
+                <Button variant="secondary" href="/login" className="ml-3">
+                  Cancel
                 </Button>
-                {!question && (
-                  <Button variant="secondary" href="/login" className="ml-3">
-                    Cancel
-                  </Button>
-                )}
-              </Form>
-              {!!question && (
-                <Form onSubmit={answerSubmitHandler}>
-                  <h1>
-                    {question}
-                    <br />
-                    <small>Enter your answer</small>
-                  </h1>
-                  <Form.Group controlId="answer">
-                    <Form.Control type="input" placeholder="Answer" />
-                  </Form.Group>
-                  <Button type="submit">Confirm</Button>
-                  <Button variant="secondary" href="/login" className="ml-3">
-                    Cancel
-                  </Button>
-                </Form>
               )}
-            </>
-          )}
-        </>
-      )}
+            </Form>
+            <br />
+            {!!question && (
+              <Form onSubmit={answerSubmitHandler}>
+                <h1>
+                  {question}
+                  <br />
+                  <small>Enter your answer</small>
+                </h1>
+                {!!error && question && <p className="text-danger">{errorMessage}</p>}
+                <Form.Group controlId="answer">
+                  <Form.Control type="input" placeholder="Answer" />
+                </Form.Group>
+                <Button type="submit">Confirm</Button>
+                <Button variant="secondary" href="/login" className="ml-3">
+                  Cancel
+                </Button>
+              </Form>
+            )}
+          </>
+        )}
+      </>
     </ContentContainer>
   );
 }

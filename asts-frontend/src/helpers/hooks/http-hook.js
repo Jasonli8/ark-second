@@ -4,6 +4,8 @@ export const useHttpClient = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState();
   const [errorDetails, setErrorDetails] = useState();
+  const [errorCode, setErrorCode] = useState();
+  const [errorMessage, setErrorMessage] = useState();
 
   const activeHttpRequests = useRef([]);
 
@@ -30,6 +32,8 @@ export const useHttpClient = () => {
         if (!response.ok) {
           setError(`Couldn\'t retrieve data. Please try again later.`);
           setErrorDetails(`${response.status} Error: ${responseData.message}`);
+          setErrorCode(response.status);
+          setErrorMessage(responseData.message);
           activeError = true;
           throw new Error(responseData.message);
         }
@@ -63,5 +67,5 @@ export const useHttpClient = () => {
     };
   }, []);
 
-  return { isLoading, error, errorDetails, sendRequest, clearError };
+  return { isLoading, error, errorDetails, errorCode, errorMessage, sendRequest, clearError };
 };

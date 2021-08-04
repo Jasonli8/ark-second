@@ -1,0 +1,17 @@
+div .ark-about {
+    background-image: url("../../assets/home/ark-invest-illustration.webp");
+    background-color: white;
+    background-repeat: no-repeat;
+    background-position: top right;
+    background-size: cover;
+    filter: grayscale(60%);
+    color: #443c66;
+    min-height: 200px;
+    width: 100%;
+}
+
+.ark-about .content {
+    background-color: rgba(196, 196, 196, 0.8);
+    line-height: 40px;
+    font-size: 20px;
+}

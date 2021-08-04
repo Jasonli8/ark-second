@@ -12,7 +12,8 @@ import { useHttpClient } from "../../helpers/hooks/http-hook";
 
 function Login() {
   const auth = useContext(AuthContext);
-  const { isLoading, error, sendRequest, clearError } = useHttpClient();
+  const { isLoading, error, errorMessage, sendRequest, clearError } =
+    useHttpClient();
 
   const authSubmitHandler = async (event) => {
     event.preventDefault();
@@ -54,6 +55,7 @@ function Login() {
         <ContentContainer addClass="mt-5 p-3 text-light">
           <Form onSubmit={authSubmitHandler}>
             <h1>Login</h1>
+            {!!error && <p className="text-danger">{errorMessage}</p>}
             <Form.Group controlId="userName">
               <Form.Control type="input" placeholder="Username" />
             </Form.Group>
@@ -67,7 +69,8 @@ function Login() {
           </Form>
           <br />
           <div>
-            <a href="http://localhost:3000/recovery/user">Forgot username?</a> <br />
+            <a href="http://localhost:3000/recovery/user">Forgot username?</a>{" "}
+            <br />
             <a href="http://localhost:3000/recovery/password">
               Forgot password?
             </a>
