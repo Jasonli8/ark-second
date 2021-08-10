@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { Form, Button, Spinner } from "react-bootstrap";
+import { Form, Button } from "react-bootstrap";
 
 ///////////////////////////////////////////////////////////////////////////////////
 
@@ -23,7 +23,7 @@ function Login() {
     try {
       const responseData = JSON.parse(
         await sendRequest(
-          "http://localhost:5000/user/login",
+          `${process.env.REACT_APP_BACKEND_ROOT}/user/login`,
           "POST",
           JSON.stringify({
             user: event.currentTarget.userName.value,
@@ -69,9 +69,9 @@ function Login() {
           </Form>
           <br />
           <div>
-            <a href="http://localhost:3000/recovery/user">Forgot username?</a>{" "}
+            <a href={`${process.env.REACT_APP_FRONTEND_ROOT}/recovery/user`}>Forgot username?</a>{" "}
             <br />
-            <a href="http://localhost:3000/recovery/password">
+            <a href={`${process.env.REACT_APP_FRONTEND_ROOT}/recovery/password`}>
               Forgot password?
             </a>
           </div>

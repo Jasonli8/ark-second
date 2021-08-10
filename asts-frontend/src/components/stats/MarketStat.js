@@ -28,7 +28,7 @@ function Ticker(props) {
     const fromDate = new Date(2010, 1, 1).toISOString().substring(0, 10);
     try {
       let responseData = await sendRequest(
-        `http://localhost:5000/api/fin/history?ticker=${ticker}&period=${period}&fromDate=${fromDate}&toDate=${toDate}`, //&toDate=${toDate}
+        `${process.env.REACT_APP_BACKEND_ROOT}/api/fin/history?ticker=${ticker}&period=${period}&fromDate=${fromDate}&toDate=${toDate}`, //&toDate=${toDate}
         "GET",
         null,
         {

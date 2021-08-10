@@ -1,11 +1,10 @@
 import React, { useState, useContext } from "react";
-import { Form, Button, Spinner } from "react-bootstrap";
+import { Form, Button } from "react-bootstrap";
 
 ///////////////////////////////////////////////////////////////////////////////////
 
 import ContentContainer from "../../../components/ContentContainer/ContentContainer";
 import LoadingSpinner from "../../../components/Loading/LoadingSpinner";
-import ErrorNotif from "../../../components/Error/ErrorNotif";
 import { AuthContext } from "../../../contexts/auth-context";
 import { useHttpClient } from "../../../helpers/hooks/http-hook";
 
@@ -23,7 +22,7 @@ function UserRecovery() {
     const user = event.currentTarget.username.value;
     try {
       let response = await sendRequest(
-        `http://localhost:5000/user/recovery/password?user=${user}`,
+        `${process.env.REACT_APP_BACKEND_ROOT}/user/recovery/password?user=${user}`,
         "GET",
         null,
         {
@@ -44,7 +43,7 @@ function UserRecovery() {
     const answer = event.currentTarget.answer.value;
     try {
       let responseData = await sendRequest(
-        "http://localhost:5000/user/recovery/passwordConfirm",
+        `${process.env.REACT_APP_BACKEND_ROOT}/user/recovery/passwordConfirm`,
         "POST",
         JSON.stringify({
           user: user,
@@ -63,7 +62,7 @@ function UserRecovery() {
         response.token
       );
 
-      window.location.href = `http://localhost:3000/update-password`;
+      window.location.href = `${process.env.REACT_APP_FRONTEND_ROOT}/update-password`;
     } catch (err) {
       console.log(err);
     }

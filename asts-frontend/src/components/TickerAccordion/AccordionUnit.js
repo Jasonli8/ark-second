@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useContext } from "react";
 
 ///////////////////////////////////////////////////////////////////////////////////
 
@@ -11,7 +11,7 @@ import { AuthContext } from "../../contexts/auth-context";
 
 function AccordionUnit(props) {
   const { eventKey, percentageFix, priceFix, holdingData } = props;
-  const { fundName, ticker, companyId } = holdingData;
+  const { ticker } = holdingData;
   const auth = useContext(AuthContext);
   const { isLoading, error, errorDetails, sendRequest, clearError } =
     useHttpClient();
@@ -20,7 +20,7 @@ function AccordionUnit(props) {
   const getPrice = async () => {
     try {
       const data = await sendRequest(
-        `http://localhost:5000/api/fin/quote?ticker=${ticker}`,
+        `${process.env.REACT_APP_BACKEND_ROOT}/api/fin/quote?ticker=${ticker}`,
         "GET",
         null,
         {

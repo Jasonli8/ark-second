@@ -2,7 +2,6 @@ import React, { useState, useEffect, useContext } from "react";
 
 ///////////////////////////////////////////////////////////////////////////////////
 
-import ContentContainer from "../ContentContainer/ContentContainer";
 import BarStack from "./Graph/BarStack";
 import ErrorNotif from '../Error/ErrorNotif'
 import LoadingSpinner from "../Loading/LoadingSpinner";
@@ -28,7 +27,7 @@ function Test(props) {
     const fromDate = new Date(2021, 5, 19).toISOString().substring(0, 10);
     try {
       let responseData1 = await sendRequest(
-        `http://localhost:5000/api/db/funds/holdings/ticker?fundType=${fundType}&ticker=${ticker}&fromDate=${fromDate}&toDate=${toDate}`,
+        `${process.env.REACT_APP_BACKEND_ROOT}/api/db/funds/holdings/ticker?fundType=${fundType}&ticker=${ticker}&fromDate=${fromDate}&toDate=${toDate}`,
         "GET",
         null,
         {
@@ -36,7 +35,7 @@ function Test(props) {
         }
       );
       let responseData2 = await sendRequest(
-        `http://localhost:5000/api/fin/history?ticker=${ticker}&period=${period}&fromDate=${fromDate}&toDate=${today.toISOString().substring(0, 10)}`,
+        `${process.env.REACT_APP_BACKEND_ROOT}/api/fin/history?ticker=${ticker}&period=${period}&fromDate=${fromDate}&toDate=${today.toISOString().substring(0, 10)}`,
         "GET",
         null,
         {

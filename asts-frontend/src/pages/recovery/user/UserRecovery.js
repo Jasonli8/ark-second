@@ -24,7 +24,7 @@ function UserRecovery() {
     const email = event.currentTarget.email.value;
     try {
       await sendRequest(
-        "http://localhost:5000/user/recovery/user",
+        `${process.env.REACT_APP_BACKEND_ROOT}/user/recovery/user`,
         "POST",
         JSON.stringify({
           email: email,

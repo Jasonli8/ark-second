@@ -14,16 +14,14 @@ import Signup from "./pages/signup/Signup";
 import Footer from './components/Footer/Footer'
 import ASTSNavbar from "./components/Navbar/ASTSNavbar";
 
+import "./App.css";
+
 const Home = React.lazy(() => import("./pages/home/Home"))
 const Fund = React.lazy(() => import("./pages/fund/Fund"))
 const Ticker = React.lazy(() => import("./pages/ticker/Ticker"))
 const UserRecovery = React.lazy(() => import("./pages/recovery/user/UserRecovery"))
 const PasswordRecovery = React.lazy(() => import("./pages/recovery/password/PasswordRecovery"))
 const UpdatePassword = React.lazy(() => import("./pages/recovery/password/UpdatePassword"))
-
-///////////////////////////////////////////////////////////////////////////////////
-
-import "./App.css";
 
 ///////////////////////////////////////////////////////////////////////////////////
 

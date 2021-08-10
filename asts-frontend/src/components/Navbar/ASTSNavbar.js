@@ -31,7 +31,7 @@ function ASTSNavbar() {
     console.log("submitted");
     console.log(event.search);
     const ticker = event.search.toUpperCase();
-    window.location.href = `http://localhost:3000/history/${ticker}`;
+    window.location.href = `${process.env.REACT_APP_FRONTEND_ROOT}/history/${ticker}`;
   };
 
   ///////////////////////////////////////////////////////////////////////////////////
@@ -41,7 +41,7 @@ function ASTSNavbar() {
       let data;
       try {
         data = await sendRequest(
-          "http://localhost:5000/api/db/funds",
+          `${process.env.REACT_APP_BACKEND_ROOT}/api/db/funds`,
           "GET",
           null,
           {

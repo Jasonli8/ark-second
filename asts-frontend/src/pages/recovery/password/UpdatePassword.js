@@ -31,7 +31,7 @@ function UpdatePassword() {
     try {
       console.log(event);
       await sendRequest(
-        "http://localhost:5000/user/recovery/updatePassword",
+        `${process.env.REACT_APP_BACKEND_ROOT}/user/recovery/updatePassword`,
         "POST",
         JSON.stringify({
           password: event.password,

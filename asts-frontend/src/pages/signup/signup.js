@@ -6,7 +6,6 @@ import { useForm } from "react-hook-form";
 
 import ContentContainer from "../../components/ContentContainer/ContentContainer";
 import LoadingSpinner from "../../components/Loading/LoadingSpinner";
-import ErrorNotif from "../../components/Error/ErrorNotif";
 import { AuthContext } from "../../contexts/auth-context";
 import { useHttpClient } from "../../helpers/hooks/http-hook";
 
@@ -29,7 +28,7 @@ function Signup() {
     const getQuestions = async () => {
       let data;
       try {
-        data = await sendRequest("http://localhost:5000/user/questions");
+        data = await sendRequest(`${process.env.REACT_APP_BACKEND_ROOT}/user/questions`);
         securityQuestions = await data.map((questionObj) => (
           <option>{questionObj.question}</option>
         ));
@@ -47,7 +46,7 @@ function Signup() {
     try {
       console.log(event);
       const responseData = await sendRequest(
-        "http://localhost:5000/user/signup",
+        `${process.env.REACT_APP_BACKEND_ROOT}/user/signup`,
         "POST",
         JSON.stringify({
           user: event.userName,

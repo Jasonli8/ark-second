@@ -35,7 +35,7 @@ function TickerAccordion(props) {
       console.log(sortType);
       try {
         let dataCompany = await sendRequest(
-          `http://localhost:5000/api/db/funds/companies?fundType=${fund}`,
+          `${process.env.REACT_APP_BACKEND_ROOT}/api/db/funds/companies?fundType=${fund}`,
           "GET",
           null,
           {
@@ -46,7 +46,7 @@ function TickerAccordion(props) {
           const getHolding = async () => {
             try {
               const dataHolding = await sendRequest(
-                `http://localhost:5000/api/db/funds/recent?fundType=${companyInfo.fundName}&companyId=${companyInfo.companyId}`,
+                `${process.env.REACT_APP_BACKEND_ROOT}/api/db/funds/recent?fundType=${companyInfo.fundName}&companyId=${companyInfo.companyId}`,
                 "GET",
                 null,
                 {

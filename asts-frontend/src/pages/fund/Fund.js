@@ -24,7 +24,7 @@ function Fund() {
       let data;
       try {
         data = await sendRequest(
-          "http://localhost:5000/api/db/funds",
+          `${process.env.REACT_APP_BACKEND_ROOT}/api/db/funds`,
           "GET",
           null,
           {

@@ -53,7 +53,7 @@ function DataStat(props) {
   const getHoldingData = async () => {
     try {
       let data = await sendRequest(
-        `http://localhost:5000/api/db/funds/change?ticker=${ticker}&fromDate=${weekAgo
+        `${process.env.REACT_APP_BACKEND_ROOT}/api/db/funds/change?ticker=${ticker}&fromDate=${weekAgo
           .toISOString()
           .substring(0, 10)}&toDate=${today.toISOString().substring(0, 10)}`,
         "GET",
@@ -74,7 +74,7 @@ function DataStat(props) {
   const getPriceData = async () => {
     try {
       let data = await sendRequest(
-        `http://localhost:5000/api/fin/quote?ticker=${ticker}`,
+        `${process.env.REACT_APP_BACKEND_ROOT}/api/fin/quote?ticker=${ticker}`,
         "GET",
         null,
         {
