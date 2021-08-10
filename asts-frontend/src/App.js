@@ -11,14 +11,15 @@ import {
 import { AuthContext } from "./contexts/auth-context";
 import Login from "./pages/login/Login";
 import Signup from "./pages/signup/Signup";
-import Home from "./pages/home/Home";
-import Fund from "./pages/fund/Fund";
-import Ticker from "./pages/ticker/Ticker";
-import UserRecovery from "./pages/recovery/user/UserRecovery";
-import PasswordRecovery from "./pages/recovery/password/PasswordRecovery";
-import UpdatePassword from "./pages/recovery/password/UpdatePassword";
 import Footer from './components/Footer/Footer'
 import ASTSNavbar from "./components/Navbar/ASTSNavbar";
+
+const Home = React.lazy(() => import("./pages/home/Home"))
+const Fund = React.lazy(() => import("./pages/fund/Fund"))
+const Ticker = React.lazy(() => import("./pages/ticker/Ticker"))
+const UserRecovery = React.lazy(() => import("./pages/recovery/user/UserRecovery"))
+const PasswordRecovery = React.lazy(() => import("./pages/recovery/password/PasswordRecovery"))
+const UpdatePassword = React.lazy(() => import("./pages/recovery/password/UpdatePassword"))
 
 ///////////////////////////////////////////////////////////////////////////////////
 
