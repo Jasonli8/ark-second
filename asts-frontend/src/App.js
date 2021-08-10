@@ -1,4 +1,10 @@
-import React, { useState, useCallback, useEffect, useRef } from "react";
+import React, {
+  useState,
+  useCallback,
+  useEffect,
+  useRef,
+  Suspense,
+} from "react";
 import {
   BrowserRouter as Router,
   Route,
@@ -11,17 +17,24 @@ import {
 import { AuthContext } from "./contexts/auth-context";
 import Login from "./pages/login/Login";
 import Signup from "./pages/signup/Signup";
-import Footer from './components/Footer/Footer'
+import Footer from "./components/Footer/Footer";
 import ASTSNavbar from "./components/Navbar/ASTSNavbar";
+import LoadingSpinner from "./components/Loading/LoadingSpinner";
 
 import "./App.css";
 
-const Home = React.lazy(() => import("./pages/home/Home"))
-const Fund = React.lazy(() => import("./pages/fund/Fund"))
-const Ticker = React.lazy(() => import("./pages/ticker/Ticker"))
-const UserRecovery = React.lazy(() => import("./pages/recovery/user/UserRecovery"))
-const PasswordRecovery = React.lazy(() => import("./pages/recovery/password/PasswordRecovery"))
-const UpdatePassword = React.lazy(() => import("./pages/recovery/password/UpdatePassword"))
+const Home = React.lazy(() => import("./pages/home/Home"));
+const Fund = React.lazy(() => import("./pages/fund/Fund"));
+const Ticker = React.lazy(() => import("./pages/ticker/Ticker"));
+const UserRecovery = React.lazy(() =>
+  import("./pages/recovery/user/UserRecovery")
+);
+const PasswordRecovery = React.lazy(() =>
+  import("./pages/recovery/password/PasswordRecovery")
+);
+const UpdatePassword = React.lazy(() =>
+  import("./pages/recovery/password/UpdatePassword")
+);
 
 ///////////////////////////////////////////////////////////////////////////////////
 
@@ -134,7 +147,7 @@ function App() {
     >
       <Router>
         {!isLoadingUser && (
-          <>
+          <Suspense fallback={<LoadingSpinner />}>
             {token ? (
               <>
                 <ASTSNavbar />
@@ -176,7 +189,7 @@ function App() {
                 </Route>
               </Switch>
             )}
-          </>
+          </Suspense>
         )}
       </Router>
     </AuthContext.Provider>
