@@ -31,7 +31,7 @@ function ASTSNavbar() {
     console.log("submitted");
     console.log(event.search);
     const ticker = event.search.toUpperCase();
-    window.location.href = `${process.env.REACT_APP_FRONTEND_ROOT}/history/${ticker}`;
+    window.location.href = `/history/${ticker}`;
   };
 
   ///////////////////////////////////////////////////////////////////////////////////

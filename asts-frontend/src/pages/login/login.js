@@ -69,9 +69,9 @@ function Login() {
           </Form>
           <br />
           <div>
-            <a href={`${process.env.REACT_APP_FRONTEND_ROOT}/recovery/user`}>Forgot username?</a>{" "}
+            <a href={`/recovery/user`}>Forgot username?</a>{" "}
             <br />
-            <a href={`${process.env.REACT_APP_FRONTEND_ROOT}/recovery/password`}>
+            <a href={`/recovery/password`}>
               Forgot password?
             </a>
           </div>

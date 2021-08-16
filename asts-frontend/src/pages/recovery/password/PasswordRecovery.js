@@ -62,7 +62,7 @@ function UserRecovery() {
         response.token
       );
 
-      window.location.href = `${process.env.REACT_APP_FRONTEND_ROOT}/update-password`;
+      window.location.href = `/update-password`;
     } catch (err) {
       console.log(err);
     }
