@@ -83,7 +83,7 @@ function AccordionBody(props) {
               </div>
 
               <div className="col">
-                <h4 className="ml-2 lead">On the Market</h4>
+                <h4 className="ml-2 lead">{companyInfo.companyName} on the market</h4>
                 <ul style={{ "list-style-type": "none" }}>
                   <li>
                     <h5>Current price: </h5>

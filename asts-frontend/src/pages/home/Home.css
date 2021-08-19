@@ -2,7 +2,7 @@ div .ark-about {
     background-image: url("../../assets/home/ark-invest-illustration.webp");
     background-color: white;
     background-repeat: no-repeat;
-    background-position: top right;
+    background-position: center center;
     background-size: cover;
     filter: grayscale(60%);
     color: #443c66;

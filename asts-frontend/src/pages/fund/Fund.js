@@ -55,7 +55,7 @@ function Fund() {
             <div className="row">
               <div className="col-9">
                 <h1>
-                  {fund}'s holdings<small>{fullFund}</small>
+                  {fund}'s holdings<small className="d-none d-md-inline">{fullFund}</small>
                 </h1>
               </div>
               <div className="col-3">

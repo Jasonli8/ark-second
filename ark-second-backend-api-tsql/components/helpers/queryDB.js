@@ -18,6 +18,7 @@ const sqlConfig = {
   },
   options: {
     trustServerCertificate: true,
+    instanceName: process.env.DB_SERVER,
   },
 };
 

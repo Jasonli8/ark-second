@@ -35,11 +35,12 @@ function Home() {
         );
         let cards = data[0].map((fund) => {
           return (
-            <div className="col-sm-6">
-              <div className="card">
+            <div className="col-md-6">
+              <div className="card m-2" style={{minHeight: "30vh", width: "97%"}}>
                 <div className="card-body">
                   <h5 className="card-title">{fund.fundName}</h5>
                   <p className="card-text">{fund.description}</p>
+                  <br />
                   <a
                     href={`/fund/${fund.fundName}`}
                     className="btn btn-primary"
@@ -56,14 +57,14 @@ function Home() {
         for (var index = 0; index < length; index += 2) {
           if (length - index > 1) {
             collection.push(
-              <div className="row my-4">
+              <div className="row">
                 {cards[index]}
                 {cards[index + 1]}
               </div>
             );
           } else {
             collection.push(
-              <div className="row my-3">
+              <div className="row">
                 {cards[index]}
               </div>
             )
@@ -94,7 +95,7 @@ function Home() {
         <div className="ark-about text-center p-5">
           <h1>About ARK</h1>
           <br />
-          <p className="content p-4 font-italic">
+          <p className="content p-4 font-italic d-none d-sm-block">
             <big>"</big>
             ARK is a global asset manager specializing in thematic investing in
             disruptive innovation. The firm is rooted in over 40 years of

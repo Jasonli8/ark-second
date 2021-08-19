@@ -87,34 +87,40 @@ function ASTSNavbar() {
             filter: "drop-shadow(0px 0px 5px rgba(0, 0, 0, 0.2))",
             width: "100vw",
             position: "fixed",
+            display: "block",
             height: "60px",
           }}
           variant="dark"
         >
-          <Navbar.Brand href="/">ASTS</Navbar.Brand>
+          <div className="d-none d-md-flex">
+            <Navbar.Brand href="/">ASTS</Navbar.Brand>
 
-          <Navbar.Collapse id="navbar-fund-drop">
-            <Nav>
-              <NavDropdown id="nav-fund-drop" title="Funds" menuVariant="dark">
-                {fundsLoaded && !isLoading && fundNav}
-              </NavDropdown>
-            </Nav>
-          </Navbar.Collapse>
+            <Navbar.Collapse id="navbar-fund-drop">
+              <Nav>
+                <NavDropdown
+                  id="nav-fund-drop"
+                  title="Funds"
+                  menuVariant="dark"
+                >
+                  {fundsLoaded && !isLoading && fundNav}
+                </NavDropdown>
+              </Nav>
+            </Navbar.Collapse>
+            <Form inline onSubmit={handleSubmit(searchSubmitHandler)}>
+              <Form.Group controlId="search">
+                <FormControl
+                  type="input"
+                  placeholder="Search up a ticker"
+                  className="mr-md-2"
+                  {...register("search", { required: "Can't be empty." })}
+                />
+              </Form.Group>
 
-          <Form inline onSubmit={handleSubmit(searchSubmitHandler)}>
-            <Form.Group controlId="search">
-              <FormControl
-                type="input"
-                placeholder="Search up a ticker"
-                className="mr-sm-2"
-                {...register("search", { required: "Can't be empty." })}
-              />
-            </Form.Group>
-
-            <Button variant="outline-light" type="submit">
-              Search
-            </Button>
-          </Form>
+              <Button variant="outline-light" type="submit">
+                Search
+              </Button>
+            </Form>
+          </div>
         </Navbar>
       </div>
       <div style={{ height: "60px" }} />
