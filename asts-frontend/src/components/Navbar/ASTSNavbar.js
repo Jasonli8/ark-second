@@ -92,10 +92,9 @@ function ASTSNavbar() {
           }}
           variant="dark"
         >
-          <div className="d-none d-md-flex">
+          <div className="d-flex">
             <Navbar.Brand href="/">ASTS</Navbar.Brand>
-
-            <Navbar.Collapse id="navbar-fund-drop">
+            <Navbar.Collapse id="navbar-fund-drop clearfix">
               <Nav>
                 <NavDropdown
                   id="nav-fund-drop"
@@ -103,10 +102,23 @@ function ASTSNavbar() {
                   menuVariant="dark"
                 >
                   {fundsLoaded && !isLoading && fundNav}
+                  <NavDropdown.Divider className="d-block d-md-none" />
+                  <Form inline onSubmit={handleSubmit(searchSubmitHandler)}>
+                    <Form.Group controlId="search">
+                      <FormControl
+                        type="input"
+                        placeholder="Search a ticker"
+                        {...register("search", {
+                          required: "Can't be empty.",
+                        })}
+                        className="mx-sm-2 d-flex d-md-none"
+                      />
+                    </Form.Group>
+                  </Form>
                 </NavDropdown>
               </Nav>
             </Navbar.Collapse>
-            <Form inline onSubmit={handleSubmit(searchSubmitHandler)}>
+            <Form inline onSubmit={handleSubmit(searchSubmitHandler)} className="d-none d-md-flex">
               <Form.Group controlId="search">
                 <FormControl
                   type="input"
