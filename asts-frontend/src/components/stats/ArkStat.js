@@ -42,20 +42,27 @@ function Test(props) {
           Authorization: "Bearer " + auth.token,
         }
       );
-      let cumulativeHolding;
-      let currDate;
+
+      console.log(responseData1);
+      console.log(responseData2);
+
+      let cumulativeHolding = null;
+      let currDate = null;
       let filledFunds = [];
       for (var data in responseData1) {
+        console.log(data)
+        console.log(responseData1[data].date === currDate);
         if (responseData1[data].date !== currDate) {
-          if (cumulativeHolding) {
+          if (cumulativeHolding !== null) {
             for (var fund in funds) {
               if (filledFunds[fund] === 0) {
                 let name = funds[fund];
+                let holdingName = `${name}Holding`
                 let holding = 0;
                 let tempHolding = {
                   ...cumulativeHolding,
                   [`${name}`]: name,
-                  [`${funds[fund]}Holding`]: holding,
+                  [`${holdingName}`]: holding,
                 };
                 cumulativeHolding = tempHolding;
               }
@@ -76,12 +83,14 @@ function Test(props) {
           };
         }
         let name = responseData1[data].fundName;
+        let holdingName = `${name}Holding`
         let holding = responseData1[data].shares;
         let tempHolding = {
           ...cumulativeHolding,
           [`${name}`]: name,
-          [`${name}Holding`]: holding,
+          [`${holdingName}`]: holding,
         };
+        console.log(tempHolding)
         for (var fund in funds) {
           if (name === funds[fund]) {
             filledFunds[fund] = 1;
@@ -89,7 +98,7 @@ function Test(props) {
         }
         cumulativeHolding = tempHolding;
       }
-      if (cumulativeHolding) {
+      if (cumulativeHolding !== null) {
         for (var fund in funds) {
           if (filledFunds[fund] === 0) {
             let name = funds[fund];

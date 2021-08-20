@@ -24,9 +24,7 @@ export const useHttpClient = () => {
       };
       try {
         const response = await fetch(url, options);
-        console.log(response);
         const responseData = await response.json();
-        console.log(responseData);
 
         activeHttpRequests.current = activeHttpRequests.current.filter(
           (reqCtrl) => reqCtrl !== httpAbortCtrl
